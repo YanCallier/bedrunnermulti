@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>bedRunner</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- <link rel="manifest" href="/manifest.json"> -->
+    <script src="param.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="bedRunnerPlateformes.js"></script>
+    <!-- <script src="webSocketClient.js"></script> -->
+</head>
+<body>
+
+    <!-- Ecrans -->
+    <div id="chargement" class="chargement"> Chargement ... </div>
+    <div id="game0ver" class="game-over"></div>
+    <div id="accueil" class="accueil"></div>
+
+    <!-- Buttons & Assets -->
+    <div id="topBar" class="top-bar">
+
+        <div id="score" class="score"><span id="inGameScore"></span> metters</div>
+        <div id="light" class="light">
+            <span id="inGameLight"></span>
+            <div class='cercle-blanc'></div>
+        </div>  
+        <div id="musicPlayer" class="music-player">
+            <img src="img/music_on.svg" alt="On" id="musicOn">
+            <img src="img/music_off.svg" alt="Off" id="musicOff">
+        </div>
+        
+    </div>
+
+    <div id="instruction" class="instruction"> 
+        <div id="musicQuestion" class="music-player">
+            Music ? <span id="musicYeh">Yeh !</span>
+            <span id="musicNop">Nop</span>
+        </div>
+        <div>Play with the space bar</div>
+        <div>Press <span class="blink">Enter</span> to start</div>
+    </div>
+
+    <div id="creditButton" class="credit-button">
+        <h1>Credit</h1>
+    </div>
+
+    <div class="runners" id="runners" >
+        Connected Runners :
+        <ul id="runnersList">
+        </ul>
+    </div>
+
+    <!-- Jeu -->
+    <canvas height="500px" width="1000" id="scene"></canvas>
+    <div class="premier-plan" id="premierPlan"></div>
+
+
+    <!-- Textes -->
+    <div id="winnerText" class="winner-text">
+        <h1>You catch the light !!!</h1>
+        <p> 
+            You can light up the game's creators and tell them it was so easy : <br/>
+            <div class="invisible-men" id="invisibleMen">
+                <span class="graphiste" >
+                    <img class="graphiste_bull" src="img/graphiste_bull.png">
+                    <a href="http://www.jibe.ultra-book.com" target="_blank"><img src="img/graphiste.png" alt="graphiste"></a>
+                </span>
+                <span class="developper" >
+                    <img class="developper_bull" src="img/developper_bull.png">
+                    <a href="http://www.ycallier.fr" target="_blank"><img src="img/developper.png" alt="developper"></a>
+                </span>
+            </div>
+            (you can hire theme too)
+        </p>
+        <p>
+            Or you can continue to run in the dark : press <span class="blink">Enter</span>
+        </p>
+    </div>
+    <div id="redText" class="red-text">
+        <h1>WoW you catched the red light !</h1>
+        <p> 
+            Contact us, we owe you a drink !
+            <div class="invisible-men" id="invisibleMen">
+                    <span class="graphiste" >
+                        <img class="graphiste_bull" src="img/graphiste_bull.png">
+                        <a href="http://www.jibe.ultra-book.com" target="_blank"><img src="img/graphiste.png" alt="http://www.jibe.ultra-book.com" id="test" class="teeeeeeeeeest"/></a>
+                    </span>
+                    <span class="developper" >
+                        <img class="developper_bull" src="img/developper_bull.png">
+                        <a href="http://www.ycallier.fr" target="_blank"><img src="img/developper.png" alt="developper"></a>
+                    </span>
+                </div>
+            
+        </p>
+        <p>
+            Or you can continue to run in the dark : press <span class="blink">Enter</span>
+        </p>
+    </div>
+    <div id="looserText" class="looser-text">
+        <p> 
+            You ran<br/>
+            <span id="overScore"></span><br/>
+            nightmares metters.<br/><br/>
+            You are exhausted ! <br/>
+            Press <span class="blink">Enter</span> to retry.
+        </p>
+    </div>
+    <div id="credit" class="credit">
+            <h1>Credit</h1>
+            <p>
+                Developper : Yan Callier<br/>
+                Graphic Artist : JB Plassiard
+            </p>
+            <p>
+                Contact Us : <br/>
+                <a href="http://www.ycallier.fr" target="_blank">www.ycallier.fr</a><br/>
+                <a href="http://www.jibe.ultra-book.com" target="_blank">www.jibe.ultra-book.com</a><br/>
+            </p>
+            <p>
+                Continue to play : press <span class="blink">Enter</span>
+            </p>
+    </div>
+
+</body>
+</html>

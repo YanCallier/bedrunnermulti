@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 18" width="19" height="18">
+	<defs>
+		<image width="18" height="18" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAAXNSR0IB2cksfwAAAHtQTFRFAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zYJG8AAAACl0Uk5TAJQzgf+mGZKA8fJAELb4MW4EsM8T9ESvhZow2XAV+hb1Qn8Sb9KRg5byKOtjAAAAgElEQVR4nGWQWRKCMABDnxoVBbcq7hvu9z+hQLG1JZ9vJpkk4NXpEqgHUn/wR4aCZKRx6kiiEpFNNJ01ZK4asTBaNjmqkclY5Vqjn8r4DWy1C5D2pDqE6MhJ5xhddI2NRWQ0Nr7SzZW45ypssYev+nSj3SD/xqs1G96tcyp9rOkL4lgGZ6t5/5YAAAAASUVORK5CYII="/>
+	</defs>
+	<style>
+		tspan { white-space:pre }
+	</style>
+	<use id="music_on" href="#img1" x="0" y="0" />
+</svg>
