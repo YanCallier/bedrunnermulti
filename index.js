@@ -182,8 +182,9 @@ function lanceLeD(min,max) {
     return min + parseInt(Math.random()*(max-min));
 };
 
+const PORT = process.env.PORT || 3000;
 app.use(function (req, res) { res.status(404).render('404'); })
-server.listen(5000,'bedrunnermulti.herokuapp.com', function(){
+server.listen(PORT,'bedrunnermulti.herokuapp.com', function(){
 // server.listen(8080,'192.168.105.78', function(){
 // server.listen(8080, function(){
     console.log('ping');
