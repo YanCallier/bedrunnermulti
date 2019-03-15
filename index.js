@@ -184,7 +184,7 @@ function lanceLeD(min,max) {
 
 const PORT = process.env.PORT || 8080;
 app.use(function (req, res) { res.status(404).render('404'); })
-server.listen(PORT,'bedrunnermulti.herokuapp.com', function(){
+server.listen(PORT, function(){
 // server.listen(8080,'192.168.105.78', function(){
 // server.listen(8080, function(){
     console.log('ping');
