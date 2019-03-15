@@ -103,7 +103,7 @@
         
         console.log(can);
         //* Connexion Server
-        socket = io.connect('bedrunnermulti.herokuapp.com:5000');
+        socket = io.connect('bedrunnermulti.herokuapp.com');
         // socket = io.connect('http://localhost:8080');
         socket.emit('parametreClient', {canWidth : can.width, canHeight : can.height});
 
