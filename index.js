@@ -1,17 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 // const session = require('express-session');
-const MongoClient = require('mongodb').MongoClient;
-// const url = 'mongodb://localhost:27017/';
-const url = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
-//const url = "mongodb://Admin:D@TE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
-const objectId = require('mongodb').ObjectID;
 const app = express();
 const WebSocket = require('ws');
 const expressWs = require('express-ws')(app);
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+const MongoClient = require('mongodb').MongoClient;
+// const url = 'mongodb://localhost:27017/';
+//const url = "mongodb://Admin:D@TE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
+const url = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
+const client = new MongoClient(uri, { useNewUrlParser: true });
+const objectId = require('mongodb').ObjectID;
 const db = client.db('bedrunnermulti');
 const collection = db.collection('users');
 
@@ -45,7 +46,7 @@ app.get('/', function(req,res){
 
 app.post('/connexion', function(req,res){
     let message = "Identifiants incorrects"
-    MongoClient.connect(url,{ useNewUrlParser: true },function(err, client) {
+    client.connect(url,{ useNewUrlParser: true },function(err, client) {
         if (err) console.log ('connect' + err);
 
         collection.find({ "login" : req.body.login }).toArray(function(err, result) {
@@ -65,7 +66,7 @@ app.post('/inscription', function(req,res){
 
     if (req.body.pass !="" && req.body.login !=""){
 
-        MongoClient.connect(url,{ useNewUrlParser: true },function(err, client) {
+        client.connect(url,{ useNewUrlParser: true },function(err, client) {
             if (err) console.log ('connect' + err);
     
 
@@ -141,7 +142,7 @@ io.on('connection', function (socket) {
     })
 
     socket.on('savePerf', function (data) {
-        MongoClient.connect(url,{ useNewUrlParser: true },function(err, client) {
+        client.connect(url,{ useNewUrlParser: true },function(err, client) {
             if (err) console.log ('connect' + err);
     
             collection.find({ "login" : socket.handshake.session.login }).toArray(function(err, result) {
