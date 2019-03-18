@@ -47,7 +47,7 @@ app.get('/', function(req,res){
 app.post('/connexion', function(req,res){
     let message = "Identifiants incorrects";
 
-    client.connect(url,{ useNewUrlParser: true },function(err, client) {
+    MongoClient.connect(url,{ useNewUrlParser: true },function(err, client) {
         if (err) console.log ('connect' + err);
         const collection = client.db('bedrunnermulti').collection('users');
         collection.find({ "login" : req.body.login }).toArray(function(err, result) {
@@ -67,7 +67,7 @@ app.post('/inscription', function(req,res){
 
     if (req.body.pass !="" && req.body.login !=""){
 
-        client.connect(url,{ useNewUrlParser: true },function(err, client) {
+        MongoClient.connect(url,{ useNewUrlParser: true },function(err, client) {
             if (err) console.log ('connect' + err);
     
 
@@ -143,7 +143,7 @@ io.on('connection', function (socket) {
     })
 
     socket.on('savePerf', function (data) {
-        client.connect(url,{ useNewUrlParser: true },function(err, client) {
+        MongoClient.connect(url,{ useNewUrlParser: true },function(err, client) {
             if (err) console.log ('connect' + err);
     
             const collection = client.db('bedrunnermulti').collection('users');
