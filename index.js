@@ -9,10 +9,8 @@ const io = require('socket.io')(server);
 
 const MongoClient = require('mongodb').MongoClient;
 // const url = 'mongodb://localhost:27017/';
-//const url = "mongodb://Admin:D@TE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
 const url = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
 const client = new MongoClient(url, { useNewUrlParser: true });
-// const client = new MongoClient(url, { useNewUrlParser: true });
 const objectId = require('mongodb').ObjectID;
 
 
