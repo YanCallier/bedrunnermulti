@@ -11,10 +11,10 @@ const MongoClient = require('mongodb').MongoClient;
 // const url = 'mongodb://localhost:27017/';
 //const url = "mongodb://Admin:D@TE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
 const url = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
-const client = new MongoClient(url, { useNewUrlParser: true });
+// const client = new MongoClient(url, { useNewUrlParser: true });
 const objectId = require('mongodb').ObjectID;
-const db = client.db('bedrunnermulti');
-const collection = db.collection('users');
+
+
 
 
 app.use(bodyParser.urlencoded({
@@ -45,10 +45,11 @@ app.get('/', function(req,res){
 });
 
 app.post('/connexion', function(req,res){
-    let message = "Identifiants incorrects"
+    let message = "Identifiants incorrects";
+
     client.connect(url,{ useNewUrlParser: true },function(err, client) {
         if (err) console.log ('connect' + err);
-
+        const collection = client.db('bedrunnermulti').collection('users');
         collection.find({ "login" : req.body.login }).toArray(function(err, result) {
             if (result.length === 1){
                 if (req.body.pass === result[0].pass){
@@ -70,7 +71,7 @@ app.post('/inscription', function(req,res){
             if (err) console.log ('connect' + err);
     
 
-    
+            const collection = client.db('bedrunnermulti').collection('users');
             collection.find({ "login" : req.body.login }).toArray(function(err, result) {
                 if (result.length === 0){
 
@@ -145,6 +146,7 @@ io.on('connection', function (socket) {
         client.connect(url,{ useNewUrlParser: true },function(err, client) {
             if (err) console.log ('connect' + err);
     
+            const collection = client.db('bedrunnermulti').collection('users');
             collection.find({ "login" : socket.handshake.session.login }).toArray(function(err, result) {
                 if (result.length === 1){
                     if (!result.perf || result.perf < data.score) {
