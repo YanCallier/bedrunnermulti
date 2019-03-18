@@ -12,6 +12,9 @@ const expressWs = require('express-ws')(app);
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
+const db = client.db('bedrunnermulti');
+const collection = db.collection('users');
+
 
 app.use(bodyParser.urlencoded({
     extended: false
@@ -45,9 +48,6 @@ app.post('/connexion', function(req,res){
     MongoClient.connect(url,{ useNewUrlParser: true },function(err, client) {
         if (err) console.log ('connect' + err);
 
-        const db = client.db('db_multijoueur');
-        const collection = db.collection('users');
-
         collection.find({ "login" : req.body.login }).toArray(function(err, result) {
             if (result.length === 1){
                 if (req.body.pass === result[0].pass){
@@ -68,8 +68,7 @@ app.post('/inscription', function(req,res){
         MongoClient.connect(url,{ useNewUrlParser: true },function(err, client) {
             if (err) console.log ('connect' + err);
     
-            const db = client.db('db_multijoueur');
-            const collection = db.collection('users');
+
     
             collection.find({ "login" : req.body.login }).toArray(function(err, result) {
                 if (result.length === 0){
@@ -144,9 +143,6 @@ io.on('connection', function (socket) {
     socket.on('savePerf', function (data) {
         MongoClient.connect(url,{ useNewUrlParser: true },function(err, client) {
             if (err) console.log ('connect' + err);
-    
-            const db = client.db('db_multijoueur');
-            const collection = db.collection('users');
     
             collection.find({ "login" : socket.handshake.session.login }).toArray(function(err, result) {
                 if (result.length === 1){
