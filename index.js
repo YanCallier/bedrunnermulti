@@ -11,6 +11,7 @@ const MongoClient = require('mongodb').MongoClient;
 // const url = 'mongodb://localhost:27017/';
 //const url = "mongodb://Admin:D@TE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
 const url = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
+const client = new MongoClient(uri, { useNewUrlParser: true });
 // const client = new MongoClient(url, { useNewUrlParser: true });
 const objectId = require('mongodb').ObjectID;
 
@@ -47,8 +48,7 @@ app.get('/', function(req,res){
 app.post('/connexion', function(req,res){
     let message = "Identifiants incorrects";
 
-    MongoClient.connect(url,{ useNewUrlParser: true },function(err, client) {
-        if (err) console.log ('connect' + err);
+    client.connect(err => {
         const collection = client.db('bedrunnermulti').collection('users');
         collection.find({ "login" : req.body.login }).toArray(function(err, result) {
             if (result.length === 1){
@@ -60,6 +60,7 @@ app.post('/connexion', function(req,res){
             client.close();
             res.render('home', {message : message, login : req.session.login});
         });
+
     });
 });
 
