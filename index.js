@@ -44,6 +44,7 @@ app.post('/connexion', function(req,res){
     let message = "Identifiants incorrects";
 
     client.connect(err => {
+        if (err) console.log ('connect' + err);
         const collection = client.db('bedrunnermulti').collection('users');
         collection.find({ "login" : req.body.login }).toArray(function(err, result) {
             if (result.length === 1){
