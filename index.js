@@ -45,6 +45,7 @@ app.post('/connexion', function(req,res){
 
     client.connect(err => {
         if (err) console.log ('connect' + err);
+        else console.log ("Pas d'erreur de connection");
         const collection = client.db('bedrunnermulti').collection('users');
         collection.find({ "login" : req.body.login }).toArray(function(err, result) {
             if (result.length === 1){
