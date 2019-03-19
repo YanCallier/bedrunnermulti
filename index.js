@@ -1,10 +1,8 @@
 // https://bedrunnermulti.herokuapp.com/
 const express = require('express');
 const bodyParser = require('body-parser');
-// const session = require('express-session');
 const app = express();
 const WebSocket = require('ws');
-const expressWs = require('express-ws')(app);
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
@@ -13,9 +11,6 @@ var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
 var client = new MongoClient(url, { useNewUrlParser: true });
 const objectId = require('mongodb').ObjectID;
-
-
-
 
 app.use(bodyParser.urlencoded({
     extended: false
@@ -26,6 +21,7 @@ const session = require('express-session')({
     resave: true,
     saveUninitialized: true
 });
+
 const sharedsession = require("express-socket.io-session");
 app.use(session);
 io.use(sharedsession(session, {
