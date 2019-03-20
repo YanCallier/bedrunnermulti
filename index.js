@@ -8,8 +8,8 @@ const io = require('socket.io')(server);
 
 var MongoClient = require('mongodb').MongoClient;
 // const url = 'mongodb://localhost:27017/';
-var url = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
-var client = new MongoClient(url, { useNewUrlParser: true });
+var uri = "mongodb+server://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
+var client = new MongoClient(uri, { useNewUrlParser: true });
 const objectId = require('mongodb').ObjectID;
 
 app.use(bodyParser.urlencoded({
