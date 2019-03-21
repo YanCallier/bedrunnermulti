@@ -51,6 +51,7 @@ app.post('/connexion', function(req,res){
             if (result.length === 1){
                 if (req.body.pass === result[0].pass){
                     req.session.login = req.body.login;
+                    req.session.port = PORT;
                     message = "Welcome " + req.session.login;
                 }
             }
