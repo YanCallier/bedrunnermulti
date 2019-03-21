@@ -103,7 +103,7 @@
         
         console.log(can);
         //* Connexion Server
-        var PORT = process.env.PORT || 8888;
+        //var PORT = process.env.PORT || 8888;
         socket = io.connect();
         // socket = io.connect('bedrunnermulti.herokuapp.com:' + PORT);
         // socket = io.connect('http://localhost:8080');
