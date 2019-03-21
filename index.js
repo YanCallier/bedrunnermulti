@@ -107,7 +107,7 @@ app.get('/bedRunner', function(req,res){
 let connections = {};
 // let connectionsId = []
 io.on('connection', function (socket) {
-    connections[socket.id]={login: socket.handshake.session.login, score: 0};
+    connections[socket.id]={login: socket.handshake.session.login, port: socket.handshake.session.port, score: 0};
     console.log("conected!");
     io.emit('runnersListUpdate', { connections: connections});
 
