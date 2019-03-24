@@ -16,6 +16,7 @@
     var touchTimer = 0; // on senfout
     var plateformes = [];  // server
     var vitesse = param.plateforme.vitesse;  // pour l'instant client
+    var runnerState = 'Connected';
 
     //*** Preload de toutes les images appelées dans le canvas avant le lancement du jeu - client
     var imgLoaded = 0;
@@ -104,18 +105,12 @@
         console.log(can);
         //* Connexion Server
         //var PORT = process.env.PORT || 8888;
-        socket = io.connect();
+        // socket = io.connect();
         // socket = io.connect('bedrunnermulti.herokuapp.com:' + PORT);
-        // socket = io.connect('http://localhost:8080');
+        socket = io.connect('http://localhost:8080');
         socket.emit('parametreClient', {canWidth : can.width, canHeight : can.height});
 
         socket.on('runnersListUpdate', function (data) {
-            // var runners = [];
-            // for (i=0; i < data.connectionsId.length; i++){
-            //     var login = data.connections[data.connectionsId[i]].login;
-            //     runners.push (login);
-            //     document.getElementById('runnersList').innerHTML += "<li>" + login + "</li>" 
-            // }
             for (var connection in data.connections) {
                 var login = data.connections[connection].login;
                 var score = data.connections[connection].score;
@@ -643,7 +638,7 @@
             stopJeu = true;
             affiche ("game0ver", "looserText");
             $("overScore").innerHTML = score;
-            socket.emit('savePerf', {score: score});
+            socket.emit('gameOver', {score: score});
         }
     }
 
