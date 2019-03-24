@@ -1,4 +1,4 @@
-// https://bedrunnermulti.herokuapp.com/
+// https://bedrunnermulti.herokuapp.com
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
