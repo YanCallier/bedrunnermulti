@@ -6,10 +6,10 @@ const WebSocket = require('ws');
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
-var MongoClient = require('mongodb').MongoClient;
-// const url = 'mongodb://localhost:27017/';
-var uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
-var client = new MongoClient(uri, { useNewUrlParser: true });
+const MongoClient = require('mongodb').MongoClient;
+const uri = 'mongodb://localhost:27017/';
+// const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
+const client = new MongoClient(uri, { useNewUrlParser: true });
 const objectId = require('mongodb').ObjectID;
 
 app.use(bodyParser.urlencoded({
@@ -44,8 +44,8 @@ app.post('/connexion', function(req,res){
     let message = "Identifiants incorrects";
 
     client.connect(err => {
-        if (err) console.log ('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ' + err);
-        else console.log ("Okkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+        if (err) console.log ('conexion error : ' + err);
+        //else console.log ("Okkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
         const collection = client.db('bedrunnermulti').collection('users');
         collection.find({ "login" : req.body.login }).toArray(function(err, result) {
             if (result.length === 1){
@@ -66,10 +66,8 @@ app.post('/inscription', function(req,res){
 
     if (req.body.pass !="" && req.body.login !=""){
 
-        MongoClient.connect(url,{ useNewUrlParser: true },function(err, client) {
-            if (err) console.log ('connect' + err);
-    
-
+        client.connect(err => {
+            if (err) console.log ('Inscription Error : ' + err);
             const collection = client.db('bedrunnermulti').collection('users');
             collection.find({ "login" : req.body.login }).toArray(function(err, result) {
                 if (result.length === 0){
@@ -81,7 +79,7 @@ app.post('/inscription', function(req,res){
                     };
 
                     collection.insertOne(user, function (err){
-                        if (err) console.log(err);
+                        if (err) console.log('Insersion error : ' + err);
                         client.close();
                         res.render('home', {message : "Merci " + user.login + ". Vous êtes enregistré et connecté.", login : user.login});
                     });
@@ -92,7 +90,9 @@ app.post('/inscription', function(req,res){
                 }
                 client.close();
             });
+    
         });
+
     }
     else {
         res.render('home', {message : "Tous les champs sont obligatoires"});
@@ -105,26 +105,36 @@ app.get('/bedRunner', function(req,res){
 });
 
 let connections = {};
-// let connectionsId = []
+let partieEncours = false;
 io.on('connection', function (socket) {
-    connections[socket.id]={login: socket.handshake.session.login, port: socket.handshake.session.port, score: 0};
+    connections[socket.id]={login: socket.handshake.session.login, port: socket.handshake.session.port, runnerState : 'connected', score: 0};
     console.log("conected!");
     io.emit('runnersListUpdate', { connections: connections});
 
     socket.on('scoreUpdate', function (data) {
         connections[socket.id].score = data.score;
         io.emit('runnersListUpdate', { connections: connections});
-      });
+    });
 
     socket.on('parametreClient', function (data) {
         connections[socket.id].canWidth = data.canWidth;
         connections[socket.id].canHeight = data.canHeight;
-        console.log(connections);
-      });
+        //console.log(connections);
+    });
 
     socket.on('playPause', function () {
-        io.emit('playPause');
-      });
+        if (partieEncours){
+            if (connections[socket.id].runnerState === 'running')  io.emit('playPause');
+        }
+        else {
+            for (var runner in connections) {
+                connections[socket.id].runnerState = 'running';
+            }
+            partieEncours = true;
+            //console.log(connections);
+            io.emit('playPause');
+        }
+    });
 
     socket.on('needNewPlateforme', function (data) {
 
@@ -132,7 +142,7 @@ io.on('connection', function (socket) {
         let newX = connections[socket.id].canWidth
         let newY = lanceLeD(500, 100);
         let newNbBriqueCentral = lanceLeD(1,5)
-        console.log("reception server");
+        //console.log("reception server");
         io.emit('creaNewPlateforme', { 
             newPlateformeSelected: newPlateformeSelected,
             newX: newX,
@@ -141,34 +151,70 @@ io.on('connection', function (socket) {
         });
     })
 
-    socket.on('savePerf', function (data) {
-        MongoClient.connect(url,{ useNewUrlParser: true },function(err, client) {
-            if (err) console.log ('connect' + err);
-    
-            const collection = client.db('bedrunnermulti').collection('users');
-            collection.find({ "login" : socket.handshake.session.login }).toArray(function(err, result) {
-                if (result.length === 1){
-                    if (!result.perf || result.perf < data.score) {
-                        console.log ("ok" + data.score);
-                        try {
-                            collection.updateOne(
-                               { "login" : socket.handshake.session.login },
-                               { $set: { "Perf" : data.score } },
-                               {upsert: true}
-                            );
-                        } catch (e) {
-                            print(e);
+    socket.on('gameOver', function (data) {
+
+        let nbRunner = 0;
+        for (var runner in connections) {
+            if (connections[runner].runnerState === 'running') nbRunner += 1;
+        }
+
+        connections[socket.id].runnerState = 'dead';
+        
+        if ( nbRunner === 1){
+            
+            // client.connect(err => {
+                // if (err) console.log ('Save Perf Error : ' + err);
+                // const collection = client.db('bedrunnermulti').collection('users');
+                // collection.find({ "login" : "login" }).toArray(function(err, result) {
+                //     console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ' + socket.handshake.session.login );
+                //     if (result.length === 1){
+                //         if (!result.perf || result.perf < data.score) {
+                //             console.log ("ok" + data.score);
+                //             try {
+                //                 collection.updateOne(
+                //                    { "login" : socket.handshake.session.login },
+                //                    { $set: { "Perf" : data.score } },
+                //                    {upsert: true}
+                //                 );
+                //             } catch (e) {
+                //                 print(e);
+                //             }
+                //         }
+                //     }
+                //     client.close();
+                // });
+            // });
+            MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
+                if (err) console.log ('connect' + err);
+        
+                const collection = client.db('bedrunnermulti').collection('users');
+                collection.find({ "login" : socket.handshake.session.login }).toArray(function(err, result) {
+                    if (result.length === 1){
+                        if (!result.perf || result.perf < data.score) {
+                            console.log ("ok" + data.score);
+                            try {
+                                collection.updateOne(
+                                   { "login" : socket.handshake.session.login },
+                                   { $set: { "Perf" : data.score } },
+                                   {upsert: true}
+                                );
+                            } catch (e) {
+                                print(e);
+                            }
                         }
                     }
-                }
-                client.close();
+                    client.close();
+                });
             });
-        });
+            partieEncours = false;
+        }
+
+
     });
 
     socket.on('disconnect', (reason) => {
         console.log(('Événement socket.io [disconnect]socket.id : ' + socket.id +'reason : ' + reason));
-        delete connections[socket.id]
+        delete connections[socket.id];
         // connectionsId.splice(connectionsId.indexOf(socket.id),1)
         io.emit('runnersListUpdate', { connections: connections});
         }
