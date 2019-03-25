@@ -43,7 +43,7 @@ app.get('/', function(req,res){
 app.post('/connexion', function(req,res){
     let message = "Identifiants incorrects";
 
-    client.connect(err => {
+    MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
         if (err) console.log ('conexion error : ' + err);
         //else console.log ("Okkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
         const collection = client.db('bedrunnermulti').collection('users');
@@ -66,7 +66,7 @@ app.post('/inscription', function(req,res){
 
     if (req.body.pass !="" && req.body.login !=""){
 
-        client.connect(err => {
+        MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
             if (err) console.log ('Inscription Error : ' + err);
             const collection = client.db('bedrunnermulti').collection('users');
             collection.find({ "login" : req.body.login }).toArray(function(err, result) {
