@@ -34,6 +34,7 @@ app.use('/bedRunner', function (req, res, next) {
   }, express.static(__dirname + '/bedRunner'));
 
 app.set('view engine', 'pug')
+
 ////////////////////////////////////////////////////////////////////
 
 app.get('/', function(req,res){
@@ -104,6 +105,8 @@ app.get('/bedRunner', function(req,res){
     // res.sendFile('index.html', {root: 'bedRunner'});
 });
 
+////////////////////////////////////////////////////////////////////
+
 let connections = {};
 let partieEncours = false;
 io.on('connection', function (socket) {
@@ -113,7 +116,7 @@ io.on('connection', function (socket) {
 
     socket.on('scoreUpdate', function (data) {
         connections[socket.id].score = data.score;
-        io.emit('runnersListUpdate', { connections: connections});
+        io.emit('scoreUpdate', [socket.id, data.score]);
     });
 
     socket.on('parametreClient', function (data) {
@@ -159,6 +162,7 @@ io.on('connection', function (socket) {
         }
 
         connections[socket.id].runnerState = 'dead';
+        io.emit('runnersListUpdate', { connections: connections});
         
         if ( nbRunner === 1){
             
