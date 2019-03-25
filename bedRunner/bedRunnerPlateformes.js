@@ -113,20 +113,27 @@
         socket.on('runnersListUpdate', function (data) {
             for (var connection in data.connections) {
                 var login = data.connections[connection].login;
-                var score = data.connections[connection].score;
+                var state = data.connections[connection].runnerState;
                 var runnersList = document.getElementById('runnersList').innerHTML;
                 var alreadyConnected = false;
                 
                 if (runnersList.indexOf(login) > 0 ) alreadyConnected = true;
 
                 if (alreadyConnected){
-                    document.getElementById("score_" + login).innerHTML = score;                }
+                    var htmlRunner = document.getElementById("runner_" + connection);
+                    if (state === "dead") htmlRunner.style.color = "#8A2E2F";
+                    else htmlRunner.style.color = "white";         
+                }
                 else {
-                    document.getElementById('runnersList').innerHTML += "<li>" + login + " (<span id='score_" + login + "'>" + score + "</span> meters ran)</li>";
+                    document.getElementById('runnersList').innerHTML += "<li id='runner_"+ connection + "'>" + login + " (<span id='score_" + connection + "'>0</span> meters ran)</li>";
                 }
             }
 
-        })
+        });
+        
+        socket.on('scoreUpdate', function (data) {
+            document.getElementById("score_" + data[0]).innerHTML = data[1];
+        });
 
         socket.on('playPause', function () {
             console.log ('recu');
@@ -637,8 +644,8 @@
             loose = true;
             stopJeu = true;
             affiche ("game0ver", "looserText");
-            $("overScore").innerHTML = score;
             socket.emit('gameOver', {score: score});
+            $("overScore").innerHTML = score;
         }
     }
 
