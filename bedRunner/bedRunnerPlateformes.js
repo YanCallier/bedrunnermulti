@@ -111,6 +111,7 @@
         socket.emit('parametreClient', {canWidth : can.width, canHeight : can.height});
 
         socket.on('runnersListUpdate', function (data) {
+            console.log(data);
             for (var connection in data.connections) {
                 var login = data.connections[connection].login;
                 var state = data.connections[connection].runnerState;
@@ -192,7 +193,7 @@
         document.addEventListener("touchstart", function (infos){
             touched = true; // * fait tourné le touchTimer
 
-            // * On vérifie avec le touchTimer si l'utilisateur à fait une double tape;
+            // * On vérifie avec le touchTimer si l'utilisateur à fait une double tape
             if (touchTimer < 20) {
                 //* Si ce n'est pas déjà le cas on indique qu'il s'agit d'un mobile dans l'URL (pour le manifest.json)
                 if (window.location.href.indexOf("?") ===  -1){
