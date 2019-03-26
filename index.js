@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({
   }));
 
 const session = require('express-session')({
-    secret: "my-secret",
+    secret: "qsdygskjdghmquhrg",
     resave: true,
     saveUninitialized: true
 });
