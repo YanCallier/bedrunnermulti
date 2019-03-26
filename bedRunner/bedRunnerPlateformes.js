@@ -421,7 +421,7 @@
                     for (var i = 0; i < this.ralentisseur.length; i++){
 
                         if (this.ralentisseur[i][0]+ this.x < perso.x && this.ralentisseur[i][1] + this.x > perso.x){
-                            vitesse = param.plateforme.vitesse;                       
+                            //vitesse = param.plateforme.vitesse;                       
                     }
                     }
                 }
