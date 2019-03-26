@@ -111,8 +111,8 @@
         socket.emit('parametreClient', {canWidth : can.width, canHeight : can.height});
 
         socket.on('runnersListUpdate', function (data) {
+            document.getElementById('runnersList').innerHTML = "";
             for (var connection in data.connections) {
-                document.getElementById('runnersList').innerHTML = "";
                 var login = data.connections[connection].login;
                 var state = data.connections[connection].runnerState;
                 var color;
