@@ -139,19 +139,26 @@ io.on('connection', function (socket) {
         }
     });
 
+    let tempo = true;
     socket.on('needNewPlateforme', function (data) {
 
-        let newPlateformeSelected = lanceLeD(0,4);
-        let newX = connections[socket.id].canWidth
-        let newY = lanceLeD(500, 100);
-        let newNbBriqueCentral = lanceLeD(1,5)
-        //console.log("reception server");
-        io.emit('creaNewPlateforme', { 
-            newPlateformeSelected: newPlateformeSelected,
-            newX: newX,
-            newY: newY,
-            newNbBriqueCentral: newNbBriqueCentral,
-        });
+        if (tempo){
+            tempo = false;
+            let newPlateformeSelected = lanceLeD(0,4);
+            let newX = connections[socket.id].canWidth
+            let newY = lanceLeD(500, 100);
+            let newNbBriqueCentral = lanceLeD(1,5)
+            //console.log("reception server");
+            io.emit('creaNewPlateforme', { 
+                newPlateformeSelected: newPlateformeSelected,
+                newX: newX,
+                newY: newY,
+                newNbBriqueCentral: newNbBriqueCentral,
+            });
+            setTimeout (function (){
+                tempo = true;
+            },500)
+        }
     })
 
     socket.on('gameOver', function (data) {
