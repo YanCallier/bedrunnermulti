@@ -111,25 +111,17 @@
         socket.emit('parametreClient', {canWidth : can.width, canHeight : can.height});
 
         socket.on('runnersListUpdate', function (data) {
-            console.log(data);
             for (var connection in data.connections) {
+                document.getElementById('runnersList').innerHTML = "";
                 var login = data.connections[connection].login;
                 var state = data.connections[connection].runnerState;
-                var runnersList = document.getElementById('runnersList').innerHTML;
-                var alreadyConnected = false;
+                var color;
+                if (state === "dead") color = "#8A2E2F";
+                else color = "white"; 
                 
-                if (runnersList.indexOf(login) > 0 ) alreadyConnected = true;
-
-                if (alreadyConnected){
-                    var htmlRunner = document.getElementById("runner_" + connection);
-                    if (state === "dead") htmlRunner.style.color = "#8A2E2F";
-                    else htmlRunner.style.color = "white";         
-                }
-                else {
-                    document.getElementById('runnersList').innerHTML += "<li id='runner_"+ connection + "'>" + login + " (<span id='score_" + connection + "'>0</span> meters ran)</li>";
-                }
+                document.getElementById('runnersList').innerHTML += "<li id='runner_"+ connection + "'>" + login + " (<span id='score_" + connection + "'>0</span> meters ran)</li>";
+                document.getElementById("runner_" + connection).style.color = color;
             }
-
         });
         
         socket.on('scoreUpdate', function (data) {
