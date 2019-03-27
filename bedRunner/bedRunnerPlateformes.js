@@ -604,6 +604,7 @@
 
         //* On demande une plateformes au serveur s'il est dispo et si la dernière est totalement entrée dans l'écran 
         if (lastPlateforme.x + lastPlateforme.largeur < can.width && !plateformOnProgress){
+            console.log(plateformOnProgress);
             socket.emit('needNewPlateforme', {message : 'I need you !'});
         }
         //* Suppression de plateforme quand elles sortent de l'écran
