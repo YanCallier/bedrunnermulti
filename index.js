@@ -144,6 +144,7 @@ io.on('connection', function (socket) {
 
         if (tempo){
             tempo = false;
+            //* Calcule des paramètres aléatoires
             let newPlateformeSelected = lanceLeD(0,4);
             let newX = connections[socket.id].canWidth
             let newY = lanceLeD(500, 100);
@@ -157,7 +158,11 @@ io.on('connection', function (socket) {
             });
             setTimeout (function (){
                 tempo = true;
+                io.emit('plateformListening');
             },500)
+        }
+        else {
+            io.emit('plateformOnProgress');
         }
     })
 
