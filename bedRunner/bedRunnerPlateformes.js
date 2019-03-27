@@ -16,7 +16,7 @@
     var touchTimer = 0; // on senfout
     var plateformes = [];  // server
     var vitesse = param.plateforme.vitesse;  // pour l'instant client
-    var runnerState = 'Connected';
+    var plateformOnProgress = false;
 
     //*** Preload de toutes les images appelées dans le canvas avant le lancement du jeu - client
     var imgLoaded = 0;
@@ -136,6 +136,14 @@
         socket.on('creaNewPlateforme', function (data) {
             new Pateforme (data.newPlateformeSelected, data.newX, can.height- data.newY, data.newNbBriqueCentral);
         })
+        
+        socket.on('plateformOnProgress', function (data) {
+            plateformOnProgress = true;
+        });
+
+        socket.on('plateformListening', function (data) {
+            plateformOnProgress = false;
+        });
 
         //* Raffraichissements différents selon navigateur
         if ( navigator.appName === "Microsoft Internet Explorer") setInterval(fresh,20);
@@ -594,17 +602,9 @@
         //* Cette fonction simple est la plus compliquée du jeu 
         var lastPlateforme = plateformes[plateformes.length-1];
 
-        //* On génère une plateformes si la dernière est totalement entrée dans l'écran 
-        if (lastPlateforme.x + lastPlateforme.largeur < can.width){
+        //* On demande une plateformes au serveur s'il est dispo et si la dernière est totalement entrée dans l'écran 
+        if (lastPlateforme.x + lastPlateforme.largeur < can.width && !plateformOnProgress){
             socket.emit('needNewPlateforme', {message : 'I need you !'});
-
-            //* Calcule des paramètres aléatoires
-            var newPlateformeSelected = lanceLeD(0,nbPlateforme); //* Choix de la plateforme
-            var newX = lanceLeD(can.width + param.plateforme.espacementMin, can.width + param.plateforme.espacementMax); //* Eloignement par rapport à la précédente
-            var newY = lanceLeD(can.height-param.plateforme.hauteur, can.height-100); //* Hauteur
-            var newNbBriqueCentral = lanceLeD(1,5); //* Largeur
-
-            // new Pateforme (newPlateformeSelected,newX,newY,newNbBriqueCentral);
         }
         //* Suppression de plateforme quand elles sortent de l'écran
         if (plateformes[0].x + plateformes[0].largeur < 0) plateformes.shift();
