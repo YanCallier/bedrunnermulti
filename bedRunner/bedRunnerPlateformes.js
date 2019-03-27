@@ -78,7 +78,7 @@
     }
 
     // * Musique non obligatoire pour le lancement du jeu -- client
-    var music = new Audio("img/oogy_sound.wav");
+    var music = new Audio("http://www.ycallier.fr/bedRunner/img/oogy_sound.wav");
     music.loop = true;
     var letTheMusicPlay = true;
 
