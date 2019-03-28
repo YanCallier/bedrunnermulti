@@ -16,7 +16,7 @@
     var touchTimer = 0; // on senfout
     var plateformes = [];  // server
     var vitesse = param.plateforme.vitesse;  // pour l'instant client
-    var plateformOnProgress = false;
+    var runnerState = 'connected';
 
     //*** Preload de toutes les images appelées dans le canvas avant le lancement du jeu - client
     var imgLoaded = 0;
@@ -134,7 +134,10 @@
           });
 
         socket.on('creaNewPlateforme', function (data) {
-            usineDePlateforme (data.newPlateformeSelected, data.newX, can.height- data.newY, data.newNbBriqueCentral);
+            if(runnerState === 'running'){
+
+                usineDePlateforme (data.newPlateformeSelected, data.newX, can.height- data.newY, data.newNbBriqueCentral);
+            }
         })
         
         socket.on('plateformOnProgress', function (data) {
@@ -620,6 +623,7 @@
         // * Affichages
         masque ("accueil", "game0ver", "winnerText", "redText", "looserText", "credit", "instruction");
         affiche("creditButton");
+        runnerState = "running";
         if (stopJeu){
             music.volume = 0.2;
             stopJeu = false;
@@ -634,6 +638,7 @@
 
     function gameOver (){ // client
         if (perso.y > can.width){
+            runnerState = "dead";
             music.volume = 0.04;
             loose = true;
             stopJeu = true;
