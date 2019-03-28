@@ -15,6 +15,7 @@
     var touched = false; // on senfout
     var touchTimer = 0; // on senfout
     var plateformes = [];  // server
+    var waitingPlatorme = [];
     var vitesse = param.plateforme.vitesse;  // pour l'instant client
     var runnerState = 'connected';
 
@@ -131,13 +132,14 @@
         socket.on('playPause', function () {
             console.log ('recu');
             pause();
-          });
+        });
 
         socket.on('creaNewPlateforme', function (data) {
-            if(runnerState === 'running'){
-
-                usineDePlateforme (data.newPlateformeSelected, data.eloignement + can.width, can.height - data.hauteur, data.newNbBriqueCentral);
-            }
+            //if(runnerState === 'running'){
+                for (var prop in data) {
+                waitingPlatorme.prop = data.prop;
+                }
+            //}
         })
         
         socket.on('plateformOnProgress', function (data) {
@@ -582,7 +584,7 @@
             for (var i=0; plateformes[i]; i++){
                 plateformes[i].maj();
             }
-            //usineDePlateforme (); // * Génération de plateformes
+            usineDePlateforme (); // * Génération de plateformes
             light.maj();
             gameOver ();
     }
@@ -601,12 +603,17 @@
         param.plateforme.espacementMax = score/50;
     }
 
-    function usineDePlateforme (newPlateformeSelected, newX, newY, newNbBriqueCentral){ //server
+    function usineDePlateforme (){ //server
         //* Cette fonction simple est la plus compliquée du jeu 
         var lastPlateforme = plateformes[plateformes.length-1];
 
+        
         //* On demande une plateformes au serveur s'il est dispo et si la dernière est totalement entrée dans l'écran 
         if (lastPlateforme.x + lastPlateforme.largeur < can.width){
+            var newPlateformeSelected = waitingPlatorme.newPlateformeSelected;
+            var newX = waitingPlatorme.eloignement + can.width;
+            var newY = can.height - waitingPlatorme.hauteur;
+            var newNbBriqueCentral = waitingPlatorme.newNbBriqueCentral;
             //socket.emit('needNewPlateforme', {message : 'I need you !'});
             new Pateforme (newPlateformeSelected, newX, newY, newNbBriqueCentral);
         }
