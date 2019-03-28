@@ -136,7 +136,7 @@
         socket.on('creaNewPlateforme', function (data) {
             if(runnerState === 'running'){
 
-                usineDePlateforme (data.newPlateformeSelected, data.newX, can.height- data.newY, data.newNbBriqueCentral);
+                usineDePlateforme (data.newPlateformeSelected, data.eloignement + can.height, can.height - data.hauteur, data.newNbBriqueCentral);
             }
         })
         
