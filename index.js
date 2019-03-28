@@ -117,14 +117,14 @@ io.on('connection', function (socket) {
     setInterval (function (){
         //* Calcule des paramètres aléatoires
         let newPlateformeSelected = lanceLeD(0,4);
-        let newX = connections[socket.id].canWidth
-        let newY = lanceLeD(500, 100);
+        let eloignement = 0;
+        let hauteur = lanceLeD(500, 100);
         let newNbBriqueCentral = lanceLeD(1,5)
         //console.log("reception server");
         io.emit('creaNewPlateforme', {
             newPlateformeSelected: newPlateformeSelected,
-            newX: newX,
-            newY: newY,
+            eloignement: eloignement,
+            hauteur: hauteur,
             newNbBriqueCentral: newNbBriqueCentral,
         });
     },500)
