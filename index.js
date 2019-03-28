@@ -114,7 +114,7 @@ io.on('connection', function (socket) {
     console.log("conected!");
     io.emit('runnersListUpdate', { connections: connections});
 
-    setTimeout (function (){
+    setInterval (function (){
         //* Calcule des paramètres aléatoires
         let newPlateformeSelected = lanceLeD(0,4);
         let newX = connections[socket.id].canWidth
