@@ -114,6 +114,21 @@ io.on('connection', function (socket) {
     console.log("conected!");
     io.emit('runnersListUpdate', { connections: connections});
 
+    setTimeout (function (){
+        //* Calcule des paramètres aléatoires
+        let newPlateformeSelected = lanceLeD(0,4);
+        let newX = connections[socket.id].canWidth
+        let newY = lanceLeD(500, 100);
+        let newNbBriqueCentral = lanceLeD(1,5)
+        //console.log("reception server");
+        io.emit('creaNewPlateforme', {
+            newPlateformeSelected: newPlateformeSelected,
+            newX: newX,
+            newY: newY,
+            newNbBriqueCentral: newNbBriqueCentral,
+        });
+    },500)
+
     socket.on('scoreUpdate', function (data) {
         connections[socket.id].score = data.score;
         io.emit('scoreUpdate', [socket.id, data.score]);
@@ -139,32 +154,32 @@ io.on('connection', function (socket) {
         }
     });
 
-    let tempo = true;
-    socket.on('needNewPlateforme', function (data) {
+    // let tempo = true;
+    // socket.on('needNewPlateforme', function (data) {
 
-        if (tempo){
-            tempo = false;
-            //* Calcule des paramètres aléatoires
-            let newPlateformeSelected = lanceLeD(0,4);
-            let newX = connections[socket.id].canWidth
-            let newY = lanceLeD(500, 100);
-            let newNbBriqueCentral = lanceLeD(1,5)
-            //console.log("reception server");
-            io.emit('creaNewPlateforme', { 
-                newPlateformeSelected: newPlateformeSelected,
-                newX: newX,
-                newY: newY,
-                newNbBriqueCentral: newNbBriqueCentral,
-            });
-            setTimeout (function (){
-                tempo = true;
-                io.emit('plateformListening');
-            },500)
-        }
-        else {
-            io.emit('plateformOnProgress');
-        }
-    })
+    //     if (tempo){
+    //         tempo = false;
+    //         //* Calcule des paramètres aléatoires
+    //         let newPlateformeSelected = lanceLeD(0,4);
+    //         let newX = connections[socket.id].canWidth
+    //         let newY = lanceLeD(500, 100);
+    //         let newNbBriqueCentral = lanceLeD(1,5)
+    //         //console.log("reception server");
+    //         io.emit('creaNewPlateforme', { 
+    //             newPlateformeSelected: newPlateformeSelected,
+    //             newX: newX,
+    //             newY: newY,
+    //             newNbBriqueCentral: newNbBriqueCentral,
+    //         });
+    //         setTimeout (function (){
+    //             tempo = true;
+    //             io.emit('plateformListening');
+    //         },500)
+    //     }
+    //     else {
+    //         io.emit('plateformOnProgress');
+    //     }
+    // })
 
     socket.on('gameOver', function (data) {
 
