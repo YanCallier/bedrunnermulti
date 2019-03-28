@@ -127,7 +127,7 @@ io.on('connection', function (socket) {
             hauteur: hauteur,
             newNbBriqueCentral: newNbBriqueCentral,
         });
-    },500)
+    },2000)
 
     socket.on('scoreUpdate', function (data) {
         connections[socket.id].score = data.score;
