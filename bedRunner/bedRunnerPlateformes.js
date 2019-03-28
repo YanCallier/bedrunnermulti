@@ -603,7 +603,7 @@
         var lastPlateforme = plateformes[plateformes.length-1];
 
         //* On demande une plateformes au serveur s'il est dispo et si la dernière est totalement entrée dans l'écran 
-        if (lastPlateforme.x + lastPlateforme.largeur < can.width && !plateformOnProgress){
+        if (lastPlateforme.x + lastPlateforme.largeur < can.width){
             console.log(plateformOnProgress);
             socket.emit('needNewPlateforme', {message : 'I need you !'});
         }
