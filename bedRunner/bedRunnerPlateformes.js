@@ -134,7 +134,7 @@
           });
 
         socket.on('creaNewPlateforme', function (data) {
-            new Pateforme (data.newPlateformeSelected, data.newX, can.height- data.newY, data.newNbBriqueCentral);
+            usineDePlateforme (data.newPlateformeSelected, data.newX, can.height- data.newY, data.newNbBriqueCentral);
         })
         
         socket.on('plateformOnProgress', function (data) {
@@ -579,7 +579,7 @@
             for (var i=0; plateformes[i]; i++){
                 plateformes[i].maj();
             }
-            usineDePlateforme (); // * Génération de plateformes
+            //usineDePlateforme (); // * Génération de plateformes
             light.maj();
             gameOver ();
     }
@@ -598,14 +598,14 @@
         param.plateforme.espacementMax = score/50;
     }
 
-    function usineDePlateforme (){ //server
+    function usineDePlateforme (newPlateformeSelected, newX, newY, newNbBriqueCentral){ //server
         //* Cette fonction simple est la plus compliquée du jeu 
         var lastPlateforme = plateformes[plateformes.length-1];
 
         //* On demande une plateformes au serveur s'il est dispo et si la dernière est totalement entrée dans l'écran 
         if (lastPlateforme.x + lastPlateforme.largeur < can.width){
-            console.log(plateformOnProgress);
-            socket.emit('needNewPlateforme', {message : 'I need you !'});
+            //socket.emit('needNewPlateforme', {message : 'I need you !'});
+            new Pateforme (newPlateformeSelected, newX, newY, newNbBriqueCentral);
         }
         //* Suppression de plateforme quand elles sortent de l'écran
         if (plateformes[0].x + plateformes[0].largeur < 0) plateformes.shift();
