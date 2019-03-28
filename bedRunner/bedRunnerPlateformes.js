@@ -137,7 +137,7 @@
         socket.on('creaNewPlateforme', function (data) {
             //if(runnerState === 'running'){
                 for (var prop in data) {
-                waitingPlatorme.prop = data.prop;
+                waitingPlatorme[prop] = data.prop;
                 }
             //}
         })
