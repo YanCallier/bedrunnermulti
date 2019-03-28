@@ -15,7 +15,7 @@
     var touched = false; // on senfout
     var touchTimer = 0; // on senfout
     var plateformes = [];  // server
-    var waitingPlatorme = [];
+    var waitingPlatorme = {};
     var vitesse = param.plateforme.vitesse;  // pour l'instant client
     var runnerState = 'connected';
 
@@ -139,6 +139,7 @@
                 for (var prop in data) {
                 waitingPlatorme[prop] = data.prop;
                 }
+                console.log(waitingPlatorme);
             //}
         })
         
