@@ -1,4 +1,4 @@
-// https://bedrunnermulti.herokuapp.com
+// https://bedrunnermulti.herokuapp.com/
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
@@ -7,8 +7,8 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 
 const MongoClient = require('mongodb').MongoClient;
-//const uri = 'mongodb://localhost:27017/';
-const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
+const uri = 'mongodb://localhost:27017/';
+// const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
 const client = new MongoClient(uri, { useNewUrlParser: true });
 const objectId = require('mongodb').ObjectID;
 
@@ -17,7 +17,7 @@ app.use(bodyParser.urlencoded({
   }));
 
 const session = require('express-session')({
-    secret: "qsdygskjdghmquhrg",
+    secret: "my-secret",
     resave: true,
     saveUninitialized: true
 });
@@ -34,7 +34,6 @@ app.use('/bedRunner', function (req, res, next) {
   }, express.static(__dirname + '/bedRunner'));
 
 app.set('view engine', 'pug')
-
 ////////////////////////////////////////////////////////////////////
 
 app.get('/', function(req,res){
@@ -109,6 +108,7 @@ app.get('/bedRunner', function(req,res){
 
 let connections = {};
 let partieEncours = false;
+let vitesse = 4;
 io.on('connection', function (socket) {
     connections[socket.id]={login: socket.handshake.session.login, port: socket.handshake.session.port, runnerState : 'connected', score: 0};
     console.log("conected!");
@@ -119,13 +119,15 @@ io.on('connection', function (socket) {
         let newPlateformeSelected = lanceLeD(0,4);
         let eloignement = 0;
         let hauteur = lanceLeD(500, 100);
-        let newNbBriqueCentral = lanceLeD(1,5)
+        let newNbBriqueCentral = lanceLeD(1,5);
+        vitesse += 0.001;
         //console.log("reception server");
         io.emit('creaNewPlateforme', {
             newPlateformeSelected: newPlateformeSelected,
             eloignement: eloignement,
             hauteur: hauteur,
             newNbBriqueCentral: newNbBriqueCentral,
+            vitesse: vitesse,
         });
     },2000)
 
