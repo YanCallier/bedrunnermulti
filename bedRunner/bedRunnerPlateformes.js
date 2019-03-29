@@ -92,8 +92,9 @@
         
         //* Canvas principal en plein écran
         can = $("scene");
-        can.width = window.innerWidth;
-        can.height = window.innerHeight;
+        console.log(can);
+        //can.width = window.innerWidth;
+        //can.height = window.innerHeight;
         ctx = can.getContext("2d");
         
         // *  Fabrication manuelle de la prmière plateforme 
@@ -257,7 +258,7 @@
         spriteStart:0,
         spriteStop:5,
         y: 0,
-        x: window.innerWidth/2.5,
+        x: 500,
 
         //* Constantes
         poid: param.perso.poid,
@@ -437,8 +438,8 @@
 
 // *** objet générateur de particules lumineuses représentant le but à atteindre  -- création et caractéristiques server, mouvement et affichage client
     var light = {
-        centerX: window.innerWidth*2,
-        centerY: window.innerWidth / 10, 
+        centerX: 2000,
+        centerY: 50, 
         switcher: 0,
         radius: 100,
         catched: false,
@@ -532,7 +533,7 @@
             ctx.shadowBlur = 0;
             this.catched = false;
             this.radius = 100;
-            this.centerX = window.innerWidth*2;
+            this.centerX = can.width*2;
             affiche("premierPlan");
             masque("winnerText");
         },
