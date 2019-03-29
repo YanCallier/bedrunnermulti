@@ -106,10 +106,8 @@
         
         console.log(can);
         //* Connexion Server
-        //var PORT = process.env.PORT || 8888;
         socket = io.connect();
-        // socket = io.connect('bedrunnermulti.herokuapp.com:' + PORT);
-        //socket = io.connect('http://localhost:8080');
+        // socket = io.connect('http://localhost:8080');
         socket.emit('parametreClient', {canWidth : can.width, canHeight : can.height});
 
         socket.on('runnersListUpdate', function (data) {
@@ -136,12 +134,13 @@
         });
 
         socket.on('creaNewPlateforme', function (data) {
+            console.log(can);
             //if(runnerState === 'running'){
                 for (var prop in data) {
                 waitingPlatorme[prop] = data[prop];
                 }
-                console.log(waitingPlatorme);
             //}
+            vitesse = data.vitesse;
         })
         
         socket.on('plateformOnProgress', function (data) {
@@ -594,7 +593,7 @@
     function majScore () { // server ce serait bien
         
         // * La vitesse du jeu augmente constament (sauf quand je joueur marche sur un "ralentisseur")
-        vitesse += param.plateforme.acceleration;
+        //vitesse += param.plateforme.acceleration;
         score += vitesse/2;
         score = parseInt(score);
         socket.emit('scoreUpdate', { score: score });
