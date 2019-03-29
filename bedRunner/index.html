@@ -6,11 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>bedRunner</title>
     <link rel="stylesheet" type="text/css" href="style.css">
-    <!-- <link rel="manifest" href="/manifest.json"> -->
     <script src="param.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="bedRunnerPlateformes.js"></script>
-    <!-- <script src="webSocketClient.js"></script> -->
 </head>
 <body>
 
@@ -42,9 +40,10 @@
         <div>Play with the space bar</div>
         <div>Press <span class="blink">Enter</span> to start</div>
     </div>
-
-    <div id="creditButton" class="credit-button">
-        <h1>Credit</h1>
+    
+    <div id="redLink" class="red-link">
+            <span id="top5Button">Best Runners</span>
+            <span id="creditButton">Credit</span>
     </div>
 
     <div class="runners" id="runners" >
@@ -54,7 +53,7 @@
     </div>
 
     <!-- Jeu -->
-    <canvas height="500px" width="1000" id="scene"></canvas>
+    <canvas height="1000px" width="2000px" id="scene"></canvas>
     <div class="premier-plan" id="premierPlan"></div>
 
 
@@ -122,6 +121,10 @@
             <p>
                 Continue to play : press <span class="blink">Enter</span>
             </p>
+    </div>
+    <div id="top5" class="top5">
+            <h1>Top 5</h1>
+
     </div>
 
 </body>
