@@ -123,8 +123,20 @@ io.on('connection', function (socket) {
     
     // gestion connection
     if (socket.handshake.session.login) {
-        connections[socket.id]={login: socket.handshake.session.login, runnerState : 'connected', score: 0};
-        console.log("conected!");
+        let login = ocket.handshake.session.login;
+
+        for (runner in connections) {
+            if (runner.login === login) {
+                connections[socket.id]={login: login,  runnerState : runner.runnerState, score: runner.score};
+                console.log("already In!");
+            }
+        }
+
+        if (!connections[socket.id]) {
+            connections[socket.id]={login: login, runnerState : 'connected', score: 0};
+            console.log("conected!");
+        }
+        
         io.emit('runnersListUpdate', { connections: connections });
         io.emit('partieEnCours', partieEnCours);
     }   
