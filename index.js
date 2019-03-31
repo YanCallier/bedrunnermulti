@@ -1,16 +1,14 @@
-// https://bedrunnermulti.herokuapp.com/
+//////////////////////////////////////////////////////////////////// Dependances et middle ware
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const WebSocket = require('ws');
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
-
 const MongoClient = require('mongodb').MongoClient;
-//const uri = 'mongodb://localhost:27017/';
-const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
-const client = new MongoClient(uri, { useNewUrlParser: true });
-const objectId = require('mongodb').ObjectID;
+
+const uri = 'mongodb://localhost:27017/';
+// const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
 
 app.use(bodyParser.urlencoded({
     extended: false
@@ -28,35 +26,28 @@ io.use(sharedsession(session, {
     autoSave:true
 }));
 
-app.use('/bedRunner', function (req, res, next) {
-    if (!req.session.login) res.render('home', {login : req.session.login});
-    else next();
-  }, express.static(__dirname + '/bedRunner'));
+app.use("/", express.static(__dirname + '/bedRunner'));
 
-app.set('view engine', 'pug')
-////////////////////////////////////////////////////////////////////
-
-app.get('/', function(req,res){
-    res.render('home', {login : req.session.login});
-});
+//////////////////////////////////////////////////////////////////// Routes
 
 app.post('/connexion', function(req,res){
-    let message = "Identifiants incorrects";
 
     MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
         if (err) console.log ('conexion error : ' + err);
-        //else console.log ("Okkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-        const collection = client.db('bedrunnermulti').collection('users');
+        let collection = client.db('bedrunnermulti').collection('users');
+
         collection.find({ "login" : req.body.login }).toArray(function(err, result) {
             if (result.length === 1){
                 if (req.body.pass === result[0].pass){
                     req.session.login = req.body.login;
-                    req.session.port = PORT;
-                    message = "Welcome " + req.session.login;
+                    //req.session.port = PORT;
                 }
             }
+            else {
+                req.session.message = "Identifiants incorrects";
+            }
             client.close();
-            res.render('home', {message : message, login : req.session.login});
+            res.redirect ('/');
         });
 
     });
@@ -68,7 +59,8 @@ app.post('/inscription', function(req,res){
 
         MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
             if (err) console.log ('Inscription Error : ' + err);
-            const collection = client.db('bedrunnermulti').collection('users');
+            let collection = client.db('bedrunnermulti').collection('users');
+
             collection.find({ "login" : req.body.login }).toArray(function(err, result) {
                 if (result.length === 0){
 
@@ -81,12 +73,14 @@ app.post('/inscription', function(req,res){
                     collection.insertOne(user, function (err){
                         if (err) console.log('Insersion error : ' + err);
                         client.close();
-                        res.render('home', {message : "Merci " + user.login + ". Vous êtes enregistré et connecté.", login : user.login});
+                        res.redirect ('/')
                     });
                     req.session.login = user.login;
                 }
                 else {
-                    res.render('home', {message : "Ce login existe déjà, il faut en choisir un autre"});
+                    req.session.message = "Ce login existe déjà, il faut en choisir un autre";
+                    res.redirect ('/');
+                    //res.render('connection', {message : "Ce login existe déjà, il faut en choisir un autre"});
                 }
                 client.close();
             });
@@ -95,176 +89,189 @@ app.post('/inscription', function(req,res){
 
     }
     else {
-        res.render('home', {message : "Tous les champs sont obligatoires"});
+        req.session.message = "Tous les champs sont obligatoires";
+        res.redirect ('/');
+        //res.render('connection', {message : "Tous les champs sont obligatoires"});
     }
 });
 
-app.get('/bedRunner', function(req,res){
-    res.render('home', {message : "Tous les champs sont obligatoires"});
-    // res.sendFile('index.html', {root: 'bedRunner'});
-});
-
-////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////// Echanges client - serveur
 
 let connections = {};
-let partieEncours = false;
-let vitesse = 4;
-io.on('connection', function (socket) {
-    connections[socket.id]={login: socket.handshake.session.login, port: socket.handshake.session.port, runnerState : 'connected', score: 0};
-    console.log("conected!");
-    io.emit('runnersListUpdate', { connections: connections});
+let partieEnCours = false;
+let vitesse = 2;
+let plareformeOnProgress = false;
 
-    setInterval (function (){
-        //* Calcule des paramètres aléatoires
+// function majTop (){
+//     MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
+//         if (err) console.log ('conection erroor : ' + err);
+//         else console.log ("ok");
+//         const collection = client.db('bedrunnermulti').collection('users');
+//         collection.find({ Perf: { $gt: 0 } }).toArray(function(err, result) {
+//             top = result.sort((a, b) => (a.Perf > b.Perf) ? -1 : 1);
+    
+//         });
+//         // top5 = collection.aggregate(
+//         //     [
+//         //         { $sort : { Perf : 1} }
+//         //     ]
+//         //  )
+//     });
+// }
+
+io.on('connection', function (socket) {
+    
+    // gestion connexion
+    if (socket.handshake.session.login) {
+        connections[socket.id]={login: socket.handshake.session.login, port: socket.handshake.session.port, runnerState : 'connected', score: 0};
+        console.log("conected!");
+        io.emit('runnersListUpdate', { connections: connections });
+        io.emit('partieEnCours', partieEnCours);
+    }
+    
+    else {
+        socket.emit('hello', socket.handshake.session.message);
+    }
+
+    // génération de plateformes 
+    socket.on('largeurPlateforme', function (largeur) {
+        if (!plareformeOnProgress) {
+            plareformeOnProgress = true;
+            let eloignement = 100;
+            let tempo = ((largeur + eloignement) / parseInt(vitesse)) * 20;
+            if (partieEnCours){
+                setTimeout(UsineDePlateforme, tempo);
+            }
+        }
+    });
+
+    function lanceLeD(min,max) {
+        return min + parseInt(Math.random()*(max-min));
+    };
+
+    function UsineDePlateforme (){
+        console.log("TO");
+        // Calcule des paramètres aléatoires
         let newPlateformeSelected = lanceLeD(0,4);
         let eloignement = 0;
         let hauteur = lanceLeD(500, 100);
         let newNbBriqueCentral = lanceLeD(1,5);
-        vitesse += 0.001;
-        //console.log("reception server");
+        vitesse += 0.01;
+
         io.emit('creaNewPlateforme', {
             newPlateformeSelected: newPlateformeSelected,
             eloignement: eloignement,
             hauteur: hauteur,
             newNbBriqueCentral: newNbBriqueCentral,
-            vitesse: vitesse,
+            vitesse : vitesse,
         });
-    },2000)
+        plareformeOnProgress = false;
+        //io.emit ('majVitesse', vitesse);
+    }
 
-    socket.on('scoreUpdate', function (data) {
-        connections[socket.id].score = data.score;
-        io.emit('scoreUpdate', [socket.id, data.score]);
-    });
-
-    socket.on('parametreClient', function (data) {
-        connections[socket.id].canWidth = data.canWidth;
-        connections[socket.id].canHeight = data.canHeight;
-        //console.log(connections);
-    });
-
+    // lancement du jeu
     socket.on('playPause', function () {
-        if (partieEncours){
+        if (partieEnCours){
             if (connections[socket.id].runnerState === 'running')  io.emit('playPause');
         }
         else {
             for (var runner in connections) {
                 connections[socket.id].runnerState = 'running';
             }
-            partieEncours = true;
+            setTimeout(UsineDePlateforme, 1500);
+            partieEnCours = true;
             //console.log(connections);
             io.emit('playPause');
         }
+    }); 
+
+    // gestions des scores en temps réèl
+    socket.on('scoreUpdate', function (data) {
+        connections[socket.id].score = data.score;
+        io.emit('scoreUpdate', [socket.id, data.score]);
     });
 
-    // let tempo = true;
-    // socket.on('needNewPlateforme', function (data) {
+    // génération et envois des meilleurs scores
+    socket.on('top5', function () {
+        MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
 
-    //     if (tempo){
-    //         tempo = false;
-    //         //* Calcule des paramètres aléatoires
-    //         let newPlateformeSelected = lanceLeD(0,4);
-    //         let newX = connections[socket.id].canWidth
-    //         let newY = lanceLeD(500, 100);
-    //         let newNbBriqueCentral = lanceLeD(1,5)
-    //         //console.log("reception server");
-    //         io.emit('creaNewPlateforme', { 
-    //             newPlateformeSelected: newPlateformeSelected,
-    //             newX: newX,
-    //             newY: newY,
-    //             newNbBriqueCentral: newNbBriqueCentral,
-    //         });
-    //         setTimeout (function (){
-    //             tempo = true;
-    //             io.emit('plateformListening');
-    //         },500)
-    //     }
-    //     else {
-    //         io.emit('plateformOnProgress');
-    //     }
-    // })
+            if (err) console.log ('conection erroooor : ' + err);
+            const collection = client.db('bedrunnermulti').collection('users');
 
+            collection.find({ Perf: { $gt: 0 } }, { "login": 1, "Perf": 1, "pass": 0 })
+            //.project({ "login": 1, "Perf": 1, "pass": 0 })
+            .toArray(function(err, users) {
+
+                let top = [];
+                for ( user in users){
+                    top.push({login : (users[user].login), perf: (users[user].Perf)})
+                }
+
+                top = top.sort((a, b) => (a.perf > b.perf) ? -1 : 1);
+                top = top.slice(0,5);
+
+                socket.emit('top5', top);
+            });
+        });
+    });
+
+    // Gestion de la fin du jeu
     socket.on('gameOver', function (data) {
+
+        connections[socket.id].runnerState = 'dead';
+        io.emit('runnersListUpdate', { connections: connections});
 
         let nbRunner = 0;
         for (var runner in connections) {
             if (connections[runner].runnerState === 'running') nbRunner += 1;
         }
 
-        connections[socket.id].runnerState = 'dead';
-        io.emit('runnersListUpdate', { connections: connections});
-        
-        if ( nbRunner === 1){
-            
-            // client.connect(err => {
-                // if (err) console.log ('Save Perf Error : ' + err);
-                // const collection = client.db('bedrunnermulti').collection('users');
-                // collection.find({ "login" : "login" }).toArray(function(err, result) {
-                //     console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ' + socket.handshake.session.login );
-                //     if (result.length === 1){
-                //         if (!result.perf || result.perf < data.score) {
-                //             console.log ("ok" + data.score);
-                //             try {
-                //                 collection.updateOne(
-                //                    { "login" : socket.handshake.session.login },
-                //                    { $set: { "Perf" : data.score } },
-                //                    {upsert: true}
-                //                 );
-                //             } catch (e) {
-                //                 print(e);
-                //             }
-                //         }
-                //     }
-                //     client.close();
-                // });
-            // });
-            MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
-                if (err) console.log ('connect' + err);
-        
-                const collection = client.db('bedrunnermulti').collection('users');
-                collection.find({ "login" : socket.handshake.session.login }).toArray(function(err, result) {
-                    if (result.length === 1){
-                        if (!result.perf || result.perf < data.score) {
-                            console.log ("ok" + data.score);
-                            try {
-                                collection.updateOne(
-                                   { "login" : socket.handshake.session.login },
-                                   { $set: { "Perf" : data.score } },
-                                   {upsert: true}
-                                );
-                            } catch (e) {
-                                print(e);
-                            }
-                        }
-                    }
-                    client.close();
-                });
-            });
-            partieEncours = false;
-        }
-
+        if ( nbRunner === 1) socket.emit('lightUp');
+        if ( nbRunner === 0) partieEnCours = false;
 
     });
 
+    // Le dernier joueur doit "attraper la lumière" pour pouvoir enregistrer son score
+    socket.on('gotIt', function (data) {
+        partieEnCours = false;
+
+        MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
+            if (err) console.log ('connect' + err);
+            const collection = client.db('bedrunnermulti').collection('users');
+
+            collection.find({ "login" : socket.handshake.session.login }).toArray(function(err, result) {
+                if (result.length === 1){
+                    if (!result.perf || result.perf < data.score) {
+                        console.log ("ok" + data.score);
+                        try {
+                            collection.updateOne(
+                               { "login" : socket.handshake.session.login },
+                               { $set: { "Perf" : data.score } },
+                               {upsert: true}
+                            );
+                        } catch (e) {
+                            print(e);
+                        }
+                    }
+                }
+                client.close();
+            });
+        });
+    });
+
+    // gestion de la déconnection
     socket.on('disconnect', (reason) => {
         console.log(('Événement socket.io [disconnect]socket.id : ' + socket.id +'reason : ' + reason));
         delete connections[socket.id];
-        // connectionsId.splice(connectionsId.indexOf(socket.id),1)
         io.emit('runnersListUpdate', { connections: connections});
         }
     );
 });
 
+//////////////////////////////////////////////////////////////////// 404 & port listening
 
-
-////////////////////////////////////////////////////////////////////
-function lanceLeD(min,max) {
-    return min + parseInt(Math.random()*(max-min));
-};
-
+app.use(function (req, res) { res.status(404).send('Cette page n\'existe pas')});
 const PORT = process.env.PORT || 8080;
-app.use(function (req, res) { res.status(404).render('404'); })
 server.listen(PORT, function(){
-// server.listen(8080,'192.168.105.78', function(){
-// server.listen(8080, function(){
     console.log('ping');
 });
