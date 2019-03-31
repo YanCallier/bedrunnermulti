@@ -192,8 +192,8 @@
     function addSockets (){
 
         //* Connexion Server
-        //socket = io.connect();
-        socket = io.connect('http://localhost:8080');
+        socket = io.connect();
+        //socket = io.connect('http://localhost:8080');
 
         socket.on ('hello', function (message){
             if (message) alert (message);
