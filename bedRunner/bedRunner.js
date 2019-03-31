@@ -247,7 +247,7 @@
         })
 
         socket.on('lightUp', function () {
-            "youhou"
+            console.log("youhou");
             lastRunner = true;
         });
 
