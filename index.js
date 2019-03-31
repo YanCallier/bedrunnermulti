@@ -121,14 +121,13 @@ let plareformeOnProgress = false;
 
 io.on('connection', function (socket) {
     
-    // gestion connexion
+    // gestion connection
     if (socket.handshake.session.login) {
-        connections[socket.id]={login: socket.handshake.session.login, port: socket.handshake.session.port, runnerState : 'connected', score: 0};
+        connections[socket.id]={login: socket.handshake.session.login, runnerState : 'connected', score: 0};
         console.log("conected!");
         io.emit('runnersListUpdate', { connections: connections });
         io.emit('partieEnCours', partieEnCours);
-    }
-    
+    }   
     else {
         socket.emit('hello', socket.handshake.session.message);
     }
@@ -176,7 +175,7 @@ io.on('connection', function (socket) {
         else {
             let test = 0;
             for (var runner in connections) {
-                connections[socket.id].runnerState = 'running';
+                connections[runner].runnerState = 'running';
                 test +=1;
             }
             console.log ("!!!!!!!!!!!!!!!!!!!!! nb de joueurs au lancement" + test)
