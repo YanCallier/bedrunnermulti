@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="param.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="bedRunnerPlateformes.js"></script>
+    <script src="bedRunner.js"></script>
 </head>
 <body>
 
@@ -38,7 +38,8 @@
             <span id="musicNop">Nop</span>
         </div>
         <div>Play with the space bar</div>
-        <div>Press <span class="blink">Enter</span> to start</div>
+        <div id="partieEnCours"> Partie en cours ... </div>
+        <div id="enterToGo">Press <span class="blink">Enter</span> to start</div>
     </div>
     
     <div id="redLink" class="red-link">
@@ -53,9 +54,8 @@
     </div>
 
     <!-- Jeu -->
-    <canvas height="1000px" width="2000px" id="scene"></canvas>
+    <canvas height="750" width="1500px" id="scene"></canvas>
     <div class="premier-plan" id="premierPlan"></div>
-
 
     <!-- Textes -->
     <div id="winnerText" class="winner-text">
@@ -122,8 +122,24 @@
                 Continue to play : press <span class="blink">Enter</span>
             </p>
     </div>
+    <div id = connection class="message">
+            <h2>Connection</h2>
+            <form method='POST' action='/connexion'>
+                Login : <input type="text" placeholder='login' name='login'></input><br/><br/>
+                Pass : <input type="password" name='pass'></input>
+                <input type="submit" value='Envoyer'></input>
+            </form>
+            <h2>Inscription</h2>
+            <form method='POST' action='/inscription'>
+                Login : <input type="text" placeholder='login' name='login'></input><br/><br/>
+                Pass : <input type="password" name='pass'></input>
+                <input type="submit" value='Envoyer'></input>
+            </form>
+            <div id="messageBox">sss</div>
+    </div>
     <div id="top5" class="top5">
             <h1>Top 5</h1>
+            <div id=top5Liste></div>
 
     </div>
 
