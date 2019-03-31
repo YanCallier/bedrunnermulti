@@ -222,12 +222,13 @@ io.on('connection', function (socket) {
 
         connections[socket.id].runnerState = 'dead';
         io.emit('runnersListUpdate', { connections: connections});
+        
 
         let nbRunner = 0;
         for (var runner in connections) {
             if (connections[runner].runnerState === 'running') nbRunner += 1;
         }
-        console.log (connections[socket.id].login + " dead");
+        console.log (connections);
         console.log (">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> nombre de joueur restant : " + nbRunner);
         if ( nbRunner === 1) io.emit('lightUp');
         if ( nbRunner === 0) partieEnCours = false;
