@@ -175,9 +175,12 @@ io.on('connection', function (socket) {
             if (connections[socket.id].runnerState === 'running')  io.emit('playPause');
         }
         else {
+            let test = 0;
             for (var runner in connections) {
                 connections[socket.id].runnerState = 'running';
+                test +=1;
             }
+            console.log ("!!!!!!!!!!!!!!!!!!!!! nb de joueurs au lancement" + test)
             setTimeout(UsineDePlateforme, 1500);
             partieEnCours = true;
             //console.log(connections);
