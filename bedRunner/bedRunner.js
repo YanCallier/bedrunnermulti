@@ -465,7 +465,7 @@
 
 // *** objet générateur de particules lumineuses représentant le but à atteindre  -- création et caractéristiques server, mouvement et affichage client
     var light = {
-        centerX: 2000,
+        centerX: 1000,
         centerY: 200, 
         switcher: 0,
         radius: 100,
