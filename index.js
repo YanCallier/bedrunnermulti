@@ -225,7 +225,7 @@ io.on('connection', function (socket) {
         for (var runner in connections) {
             if (connections[runner].runnerState === 'running') nbRunner += 1;
         }
-
+        console.log (">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" + nbRunner);
         if ( nbRunner === 1) io.emit('lightUp');
         if ( nbRunner === 0) partieEnCours = false;
 
