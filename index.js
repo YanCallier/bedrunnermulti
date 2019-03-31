@@ -244,7 +244,7 @@ io.on('connection', function (socket) {
 
             collection.find({ "login" : socket.handshake.session.login }).toArray(function(err, result) {
                 if (result.length === 1){
-                    if (!result.Perf || result.Perf < data.score) {
+                    if (!result[0].Perf || result[0].Perf < data.score) {
                         console.log ("ok" + data.score);
                         try {
                             collection.updateOne(
