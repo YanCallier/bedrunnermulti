@@ -150,7 +150,6 @@ io.on('connection', function (socket) {
     };
 
     function UsineDePlateforme (){
-        console.log("TO");
         // Calcule des paramètres aléatoires
         let newPlateformeSelected = lanceLeD(0,4);
         let eloignement = 0;
