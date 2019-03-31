@@ -7,8 +7,8 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const MongoClient = require('mongodb').MongoClient;
 
-const uri = 'mongodb://localhost:27017/';
-// const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
+//const uri = 'mongodb://localhost:27017/';
+const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
 
 app.use(bodyParser.urlencoded({
     extended: false
