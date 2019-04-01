@@ -7,15 +7,15 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const MongoClient = require('mongodb').MongoClient;
 
-//const uri = 'mongodb://localhost:27017/';
-const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
+const uri = 'mongodb://localhost:27017/';
+// const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
 
 app.use(bodyParser.urlencoded({
     extended: false
   }));
 
 const session = require('express-session')({
-    secret: "my-secret",
+    secret: "qergsgsdfgdhdsfghdfgh",
     resave: true,
     saveUninitialized: true
 });
@@ -40,7 +40,6 @@ app.post('/connexion', function(req,res){
             if (result.length === 1){
                 if (req.body.pass === result[0].pass){
                     req.session.login = req.body.login;
-                    //req.session.port = PORT;
                 }
             }
             else {
@@ -79,9 +78,7 @@ app.post('/inscription', function(req,res){
                 }
                 else {
                     req.session.message = "Ce login existe déjà, il faut en choisir un autre";
-                    res.redirect ('/');
-                    //res.render('connection', {message : "Ce login existe déjà, il faut en choisir un autre"});
-                }
+                    res.redirect ('/');                }
                 client.close();
             });
     
@@ -99,7 +96,7 @@ app.post('/inscription', function(req,res){
 
 let connections = {};
 let partieEnCours = false;
-let vitesse = 2;
+let vitesse = 4;
 let plareformeOnProgress = false;
 
 // function majTop (){
@@ -123,20 +120,8 @@ io.on('connection', function (socket) {
     
     // gestion connection
     if (socket.handshake.session.login) {
-        let login = ocket.handshake.session.login;
-
-        for (runner in connections) {
-            if (runner.login === login) {
-                connections[socket.id]={login: login,  runnerState : runner.runnerState, score: runner.score};
-                console.log("already In!");
-            }
-        }
-
-        if (!connections[socket.id]) {
-            connections[socket.id]={login: login, runnerState : 'connected', score: 0};
-            console.log("conected!");
-        }
-        
+        connections[socket.id]={login: socket.handshake.session.login, runnerState : 'connected', score: 0};
+        console.log("conected!");
         io.emit('runnersListUpdate', { connections: connections });
         io.emit('partieEnCours', partieEnCours);
     }   
@@ -180,21 +165,18 @@ io.on('connection', function (socket) {
     }
 
     // lancement du jeu
-    socket.on('playPause', function () {
-        if (partieEnCours){
-            if (connections[socket.id].runnerState === 'running')  io.emit('playPause');
-        }
-        else {
-            let test = 0;
+    socket.on('play', function () {
+        if (!partieEnCours){
             for (var runner in connections) {
                 connections[runner].runnerState = 'running';
-                test +=1;
             }
-            console.log ("!!!!!!!!!!!!!!!!!!!!! nb de joueurs au lancement" + test)
-            setTimeout(UsineDePlateforme, 1500);
+            setTimeout(UsineDePlateforme, 8000);
             partieEnCours = true;
-            //console.log(connections);
-            io.emit('playPause');
+            io.emit('play');
+        }
+        else {
+            if (connections[socket.id].runnerState != 'running')
+            socket.emit('pleaseWait');
         }
     }); 
 
@@ -239,8 +221,7 @@ io.on('connection', function (socket) {
         for (var runner in connections) {
             if (connections[runner].runnerState === 'running') nbRunner += 1;
         }
-        console.log (connections);
-        console.log (">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> nombre de joueur restant : " + nbRunner);
+
         if ( nbRunner === 1) io.emit('lightUp');
         if ( nbRunner === 0) partieEnCours = false;
 
@@ -248,6 +229,7 @@ io.on('connection', function (socket) {
 
     // Le dernier joueur doit "attraper la lumière" pour pouvoir enregistrer son score
     socket.on('gotIt', function (data) {
+        connections[socket.id].runnerState = "winner";
         partieEnCours = false;
 
         MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {

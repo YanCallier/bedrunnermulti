@@ -1,20 +1,21 @@
-
-
 (function () {
     "use strict"
     //*** Variables Globales
+    var start = null;
     var socket;
-    var can;
-    var ctx;
-    var fond;
-    var ratioEcran = 1;
-    var score = 0;
-    var nbLight = 0;
-    var rafresh = 0;
-    var stopJeu = true;
-    var touched = false;
-    var touchTimer = 0;
-    var plateformes = [];
+    var can; // Client
+    var ctx; // Client
+    var fond; // Client
+    var ratioEcran = 1; // Client
+    var score = 0; // Client mais sécurité server
+    var nbLight = 0; // Client mais sécurité server
+    var loose= false; // Client mais sécurité server
+    var rafresh = 0; // Client
+    var stopJeu = true; // Server
+    var touched = false; // on senfout
+    var touchTimer = 0; // on senfout
+    var plateformes = [];  // server
+    var waitingPlatorme = {};
     var vitesse = param.plateforme.vitesse;  // pour l'instant client
     var lastRunner = false;
     var runnerState = 'connected';
@@ -87,6 +88,8 @@
     function loader (){
 
         
+
+        
         //* Canvas principal en plein écran
         can = $("scene");
         ctx = can.getContext("2d");
@@ -102,9 +105,8 @@
         perso.creaSprite();
         light.creaCanLight(); 
  
-        //* Raffraichissements
-        setInterval(fresh, 20);
-        //fresh();
+        //* Raffraichissements différents selon navigateur
+        setInterval(fresh,20);
 
         //* Ajout de la musique du jeu
         player ();
@@ -179,10 +181,6 @@
             affTop5();
         });
 
-        $("winnerButton").addEventListener("click", function (){
-            affTop5();
-        });
-
         $("musicPlayer").addEventListener("click", function (){
             letTheMusicPlay = !letTheMusicPlay;
             player ();
@@ -192,21 +190,14 @@
             letTheMusicPlay = !letTheMusicPlay;
             player ();
         });
-
-        var closable = document.getElementsByClassName("closable");
-        for (i=0; closable[i]; i++){
-            closable[i].addEventListener("click", function (){
-                this.style.display="none";
-            });
-        }
-        
     }
 
     function addSockets (){
 
         //* Connexion Server
-        // socket = io.connect();
+        //socket = io.connect();
         socket = io.connect('http://localhost:8080');
+        //socket.emit('parametreClient', {canWidth : can.width, canHeight : can.height});
 
         socket.on ('hello', function (message){
             if (message) alert (message);
@@ -222,10 +213,6 @@
                 masque ('partieEnCours');
                 affiche ('enterToGo');
             }
-        });
-
-        socket.on ('pleaseWait', function (){
-            alert ('Please wait, there are runners in run');
         });
 
         socket.on('runnersListUpdate', function (data) {
@@ -247,8 +234,8 @@
             document.getElementById("score_" + data[0]).innerHTML = data[1];
         });
 
-        socket.on('play', function () {
-            play();
+        socket.on('playPause', function () {
+            pause();
         });
 
         socket.on('creaNewPlateforme', function (data) {
@@ -262,30 +249,40 @@
             if (plateformes[0].x + plateformes[0].largeur < 0) plateformes.shift();
             vitesse = data.vitesse;
         })
+        
+        socket.on('plateformOnProgress', function (data) {
+            plateformOnProgress = true;
+        });
+
+        socket.on('plateformListening', function (data) {
+            plateformOnProgress = false;
+        });
 
         socket.on('lightUp', function () {
-            console.log("youhou");
             lastRunner = true;
         });
 
         socket.on('top5', function (top) {
             console.log(top);
             $('top5Liste').innerHTML = "";
-            for (i=0; top[i]; i++){
-                $('top5Liste').innerHTML += top[i].login + " : " + top[i].perf + " meters ran</br>";
+            var limit;
+            if (top.length > 5 ) limit = 6;
+            else limit = top.length;
+            for (i=0; i<limit; i++){
+                $('top5Liste').innerHTML += top[i].login + " : " + top[i].Perf + " meters ran</br>";
             }
             affiche("top5");
         });
 
+
     }
 
-    function enterFct (){
+    function enterFct (){ //client mais la fonction pause envoie au server pour mettre le jeu en pause pour tout le monde
         // * Pour continuer à jouer après avoir atteint l'objectif principal
-        //if (light.catched) light.continue();
-        console.log(runnerState);
+        if (light.catched) light.continue(); 
         
-        if (runnerState === 'dead' || runnerState === 'winner') reload();
-        else socket.emit('play');
+        if (loose) reload(); // * Recharge après un game-over
+        else socket.emit('playPause'); // * Lance/Arrête le jeu 
     }
 
 
@@ -343,23 +340,16 @@
             this.spriteCtx.drawImage(imagePersoCourse, this.spriteSize*this.spriteCount, 0, this.spriteSize, this.spriteSize, 0, 0, this.spriteSize, this.spriteSize);
         },
 
-        test:0,
         jump: function() {
-            if (this.toucherLeFond) {
-                this.spriteCount = param.perso.nbImageCourse; // * Place le sprite sur la dernière image de course *
-                this.test = 0;
-            }
+            if (this.toucherLeFond) this.spriteCount = param.perso.nbImageCourse; // * Place le sprite sur la dernière image de course *
             this.spriteStop = 9;
             this.spriteStart = 9; // * fige le sprite en position saut une fois que l'animation a  été jouée
             if (this.toucherLeFond){
                 this.stopeur = false;
             }
             if (!this.stopeur){
-                this.vecteurUp = this.impulsion-this.vecteurDown;
+                this.vecteurUp = this.impulsion-this.vecteurDown;                  
             }
-            if (this.vecteurUp < 20) this.stopJump(); 
-            // this.test +=1;
-            // if (this.test > 1) this.stopJump();            
         },
         
         stopJump: function() {
@@ -490,7 +480,7 @@
 
 // *** objet générateur de particules lumineuses représentant le but à atteindre  -- création et caractéristiques server, mouvement et affichage client
     var light = {
-        centerX: 1000,
+        centerX: 2000,
         centerY: 200, 
         switcher: 0,
         radius: 100,
@@ -515,7 +505,7 @@
 
         //* Raffraichissment des particules
         maj: function(){
-            //if (score > 10000) this.redLight(); // * Objectif caché
+            if (score > 10000) this.redLight(); // * Objectif caché
             this.anim();//* animation
             this.glisse(); //* position
             //* dessin des particules lumineuses et halo
@@ -565,9 +555,10 @@
             if (catchX && catchY){
 
                 socket.emit('gotIt', { score: score } );
-                runnerState = "winner";
                 music.volume = 0.04; //* On tamise
+                nbLight ++;
                 this.catched = true;
+                masque("creditButton");
                 masque("premierPlan");
 
                 //* Dessin de l'écran de victoire et affichage des textes
@@ -575,30 +566,30 @@
                 ctx.shadowBlur = reSizer;
                 ctx.shadowColor = "white";
                 ctx.drawImage(flashMonster, ((window.innerWidth/2) - (reSizer/2)), ((window.innerHeight/2) - (reSizer/2)), reSizer, reSizer);
-                // if (score > 10000) affiche ("redText");
-                // else affiche ("winnerText");
-                affiche ("winnerText");
+                if (score > 10000) affiche ("redText");
+                else affiche ("winnerText");
+
                 stopJeu = true;
             }
         },
 
-        // //* En partique le jeu n'a pas de fin tant que le joueur n'a pas perdu
-        // continue: function(){
-        //     ctx.shadowBlur = 0;
-        //     this.catched = false;
-        //     this.radius = 100;
-        //     this.centerX = can.width*2;
-        //     affiche("premierPlan");
-        //     masque("winnerText");
-        // },
+        //* En partique le jeu n'a pas de fin tant que le joueur n'a pas perdu
+        continue: function(){
+            ctx.shadowBlur = 0;
+            this.catched = false;
+            this.radius = 100;
+            this.centerX = can.width*2;
+            affiche("premierPlan");
+            masque("winnerText");
+        },
 
-        // redLight: function (){
-        //     this.ctxP[0].fillStyle = "red";
-        //     this.ctxP[1].fillStyle = "red";
-        //     this.ctxP[2].fillStyle = "red";
-        //     this.ctxP[3].fillStyle = "red";
-        //     this.ctxP[4].fillStyle = "red";
-        // },
+        redLight: function (){
+            this.ctxP[0].fillStyle = "red";
+            this.ctxP[1].fillStyle = "red";
+            this.ctxP[2].fillStyle = "red";
+            this.ctxP[3].fillStyle = "red";
+            this.ctxP[4].fillStyle = "red";
+        },
     }
 
 
@@ -621,23 +612,22 @@
     //     requestAnimationFrame (timer);
     // }
 
-    // function fresh (){
-    //     setTimeout(function() {
-    //         requestAnimationFrame(fresh);
-    //         if (!stopJeu){
-    //             rafresh += 1; // * nombre de rafraichissement (sert la fonction de ralentissement)
-    //             majCan();
-    //             majScore();
-    //         }
+    function fresh (){
+        if (!stopJeu){
+            rafresh += 1; // * nombre de rafraichissement (sert la fonction de ralentissement)
+            majCan();
+            majScore();
+        }
+        // if (touched){ // * Timer tactile
+        //     touchTimer ++;
+        // }
+    }
 
-    //     }, 20);
-    // }
-
-    function majCan() {
+    function majCan() { // client
         
             ctx.clearRect(0, 0, can.width, can.height);
             perso.maj();
-            fond = can.height + 1000; // * Avant maj des plataformes
+            fond = can.height + 100; // * Avant maj des plataformes
             for (var i=0; plateformes[i]; i++){
                 plateformes[i].maj();
             }
@@ -645,37 +635,71 @@
             gameOver ();
     }
 
-    function majScore () {
+    function majScore () { // server ce serait bien
         
-        // * La vitesse du jeu augmente constament
+        // * La vitesse du jeu augmente constament (sauf quand je joueur marche sur un "ralentisseur")
+        //vitesse += param.plateforme.acceleration;
         score += vitesse/2;
         score = parseInt(score);
         socket.emit('scoreUpdate', { score: score });
         $("inGameScore").innerHTML = score;
         $("inGameLight").innerHTML = nbLight;
+
+        // * Plus le score augmente plus les plateformes s'éloignent (besoin de plus de vitesse)
+        param.plateforme.espacementMax = score/50;
     }
 
-    function affCredit (){
+    function usineDePlateforme (){ //server
+        //* Cette fonction simple est la plus compliquée du jeu 
+        var lastPlateforme = plateformes[plateformes.length-1];
+
+        
+        //* On demande une plateformes au serveur s'il est dispo et si la dernière est totalement entrée dans l'écran 
+        if (lastPlateforme.x + lastPlateforme.largeur < can.width){
+            var newPlateformeSelected = waitingPlatorme.newPlateformeSelected;
+            var newX = waitingPlatorme.eloignement + can.width;
+            var newY = can.height - waitingPlatorme.hauteur;
+            var newNbBriqueCentral = waitingPlatorme.newNbBriqueCentral;
+            //socket.emit('needNewPlateforme', {message : 'I need you !'});
+            new Pateforme (newPlateformeSelected, newX, newY, newNbBriqueCentral);
+        }
+        //* Suppression de plateforme quand elles sortent de l'écran
+        if (plateformes[0].x + plateformes[0].largeur < 0) plateformes.shift();
+    }
+
+    function affCredit (){ //client
         affiche("credit");
         stopJeu = true;
     }
 
-    function affTop5 (){
+    function affTop5 (){ //client
         socket.emit('top5');
+        
         stopJeu = true;
     }
 
-    function play (){
-        masque ("accueil", "game0ver", "winnerText", "looserText", "credit", "instruction");
+    function pause (){
+        // * Affichages
+        masque ("accueil", "game0ver", "winnerText", "redText", "looserText", "credit", "instruction");
         affiche("creditButton");
-        stopJeu = false;
         runnerState = "running";
+        if (stopJeu){
+            music.volume = 0.2;
+            stopJeu = false;
+        }
+        else {
+            music.volume = 0.04; // * on tamise mais on éteint pas
+            stopJeu = true;
+        }
+        //* Par de musique sur mobile
+        if (!touched)  music.play();
     }
 
-    function gameOver (){
+    function gameOver (){ // client
         if (perso.y > can.width){
             runnerState = "dead";
             music.volume = 0.04;
+            loose = true;
             stopJeu = true;
             affiche ("game0ver", "looserText");
             socket.emit('gameOver', {score: score});
@@ -683,7 +707,7 @@
         }
     }
 
-    function player (){
+    function player (){ // client
         music.muted = !letTheMusicPlay;
         if (letTheMusicPlay){
             masque ("musicOff", "musicNop");
@@ -695,7 +719,7 @@
         }
     }
 
-    function reload (){
+    function reload (){ //client
         window.location.reload();
     }
 

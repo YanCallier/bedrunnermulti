@@ -11,13 +11,13 @@ var param = {
         nbImageCourse: 5,
         nbImageSaute:4,
         impulsion:20,
-        poid: 0.5,
-        spriteSpeed: 2,
+        poid: 0.3,
+        spriteSpeed: 3,
         inertie: 7
     },
     plateforme: {
         hauteur:500,
-        vitesse: 4,
+        vitesse: 2,
         acceleration: 0.001, // attention ça va très vite.
         espacementMin: 0,
         espacementMax: 0,

@@ -60,6 +60,7 @@
     <!-- Textes -->
     <div id="winnerText" class="winner-text">
         <h1>You catch the light !!!</h1>
+        <p> You ran <span id="winnerScore"></span>, you maybe part of the <span id="winnerButton" class="blink">Best Runners</span> right now !</p>
         <p> 
             You can light up the game's creators and tell them it was so easy : <br/>
             <div class="invisible-men" id="invisibleMen">
@@ -75,27 +76,7 @@
             (you can hire theme too)
         </p>
         <p>
-            Or you can continue to run in the dark : press <span class="blink">Enter</span>
-        </p>
-    </div>
-    <div id="redText" class="red-text">
-        <h1>WoW you catched the red light !</h1>
-        <p> 
-            Contact us, we owe you a drink !
-            <div class="invisible-men" id="invisibleMen">
-                    <span class="graphiste" >
-                        <img class="graphiste_bull" src="img/graphiste_bull.png">
-                        <a href="http://www.jibe.ultra-book.com" target="_blank"><img src="img/graphiste.png" alt="http://www.jibe.ultra-book.com" id="test" class="teeeeeeeeeest"/></a>
-                    </span>
-                    <span class="developper" >
-                        <img class="developper_bull" src="img/developper_bull.png">
-                        <a href="http://www.ycallier.fr" target="_blank"><img src="img/developper.png" alt="developper"></a>
-                    </span>
-                </div>
-            
-        </p>
-        <p>
-            Or you can continue to run in the dark : press <span class="blink">Enter</span>
+            Press <span class="blink">Enter</span> to restart.
         </p>
     </div>
     <div id="looserText" class="looser-text">
@@ -107,7 +88,7 @@
             Press <span class="blink">Enter</span> to retry.
         </p>
     </div>
-    <div id="credit" class="credit">
+    <div id="credit" class="message closable">
             <h1>Credit</h1>
             <p>
                 Developper : Yan Callier<br/>
@@ -117,9 +98,6 @@
                 Contact Us : <br/>
                 <a href="http://www.ycallier.fr" target="_blank">www.ycallier.fr</a><br/>
                 <a href="http://www.jibe.ultra-book.com" target="_blank">www.jibe.ultra-book.com</a><br/>
-            </p>
-            <p>
-                Continue to play : press <span class="blink">Enter</span>
             </p>
     </div>
     <div id = connection class="message">
@@ -137,7 +115,7 @@
             </form>
             <div id="messageBox">sss</div>
     </div>
-    <div id="top5" class="top5">
+    <div id="top5" class="message closable">
             <h1>Top 5</h1>
             <div id=top5Liste></div>
 
