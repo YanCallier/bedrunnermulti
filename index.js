@@ -96,7 +96,7 @@ app.post('/inscription', function(req,res){
 
 let connections = {};
 let partieEnCours = false;
-let vitesse = 2;
+let vitesse = 3;
 let plareformeOnProgress = false;
 
 // function majTop (){
@@ -170,7 +170,7 @@ io.on('connection', function (socket) {
             for (var runner in connections) {
                 connections[runner].runnerState = 'running';
             }
-            setTimeout(UsineDePlateforme, 8000);
+            setTimeout(UsineDePlateforme, 6000);
             partieEnCours = true;
             io.emit('play');
         }
