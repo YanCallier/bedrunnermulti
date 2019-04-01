@@ -633,6 +633,14 @@
     //     }, 20);
     // }
 
+    function fresh (){
+        if (!stopJeu){
+            rafresh += 1; // * nombre de rafraichissement (sert la fonction de ralentissement)
+            majCan();
+            majScore();
+        }
+    }
+
     function majCan() {
         
             ctx.clearRect(0, 0, can.width, can.height);
