@@ -164,6 +164,7 @@
         socket.on('runnersListUpdate', function (data) {
 
             connectedRunners = data.connections;
+            console.log (data.connections);
             
             document.getElementById('runnersList').innerHTML = "";
             for (var connection in data.connections) {
