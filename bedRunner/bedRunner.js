@@ -358,7 +358,7 @@
 
         //* Calcule de la largeur : addition de toutes les largeurs d'images
         this.largeur = this.imgDebut.width + (nbBriqueCentral*this.imgCentre[0].width) + this.imgFin.width;
-        socket.emit('largeurPlateforme', this.largeur);
+        
 
         //* L'image finale sera définie dans un canvas à la création de la plateforme
         this.image = document.createElement ("canvas");
@@ -394,6 +394,7 @@
 
         //* ajout de la plateforme au tableau de plateformes
         plateformes.push(this);
+        socket.emit('largeurPlateforme', this.largeur);
 
         // * Raffraichissement de la plateforme
         this.maj = function(){
