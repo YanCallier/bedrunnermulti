@@ -503,7 +503,6 @@
                 runnerState = "winner";
                 this.catched = true;
                 masque("premierPlan");
-                $("redLink").style.display = "flex";
 
                 //* Dessin de l'écran de victoire et affichage des textes
                 var reSizer = window.innerHeight*1.5;
@@ -511,7 +510,7 @@
                 ctx.shadowColor = "white";
                 ctx.drawImage(flashMonster, ((window.innerWidth/2) - (reSizer/2)), ((window.innerHeight/2) - (reSizer/2)), reSizer, reSizer);
                 affiche ("winnerText");
-                stopJeu = true;
+                endGame ();
             }
         },
 
@@ -561,19 +560,22 @@
 
         stopJeu = false;
         runnerState = 'running';
-        readyToPlay = false;
     }
 
     function gameOver (){
         
         if (perso.y > can.width){
             runnerState = "dead";
-            stopJeu = true;
             affiche ("game0ver", "looserText");
-            $("redLink").style.display = "flex";
             socket.emit('gameOver');
-            //$("overScore").innerHTML = score;
+            endGame();
         }
+    }
+
+    function endGame () {
+        stopJeu = true;
+        $("redLink").style.display = "flex";
+        readyToPlay = false;
     }
     
     function enterFct (){
