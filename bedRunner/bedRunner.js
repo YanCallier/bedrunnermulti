@@ -555,7 +555,9 @@
         lastRunner = false;
 
         light.catched = false;
+        light.centerX = 1500;
         ctx.shadowBlur = 'none';
+        ctx.shadowColor = 'black';
 
         stopJeu = false;
         runnerState = 'running';
