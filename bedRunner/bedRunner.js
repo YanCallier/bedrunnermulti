@@ -426,7 +426,7 @@
 
 // *** objet générateur de particules lumineuses représentant le but à atteindre  -- création et caractéristiques server, mouvement et affichage client
     var light = {
-        centerX: 1000,
+        centerX: 1500,
         centerY: 200, 
         switcher: 0,
         radius: 100,
@@ -503,6 +503,7 @@
                 runnerState = "winner";
                 this.catched = true;
                 masque("premierPlan");
+                $("redLink").style.display = "flex";
 
                 //* Dessin de l'écran de victoire et affichage des textes
                 var reSizer = window.innerHeight*1.5;
@@ -518,35 +519,6 @@
 
 
 ////////////// *** Fonctions de mise à jours générales du jeu ***
-
-    // function timer  (){ // * Pas de timestamp : maj à chaque raffraichissement de l'écran -- client besoin d'un timestamp
-    //     fresh();
-    //     requestAnimationFrame (timer);
-    // }
-
-    // function timer  (timestamp){ // * Pas de timestamp : maj à chaque raffraichissement de l'écran -- client besoin d'un timestamp
-    //     var progress;
-    //     if (start === null) start = timestamp;
-    //     progress = timestamp - start;
-
-    //     if (progress > 10) {
-    //         start = null;
-    //         fresh();
-    //     }
-    //     requestAnimationFrame (timer);
-    // }
-
-    // function fresh (){
-    //     setTimeout(function() {
-    //         requestAnimationFrame(fresh);
-    //         if (!stopJeu){
-    //             rafresh += 1; // * nombre de rafraichissement (sert la fonction de ralentissement)
-    //             majCan();
-    //             majScore();
-    //         }
-
-    //     }, 20);
-    // }
 
     function fresh (){
         if (!stopJeu){
@@ -568,25 +540,6 @@
             gameOver ();
     }
 
-    function majScore () {
-        
-        // * La vitesse du jeu augmente constament
-        score += vitesse/2;
-        score = parseInt(score);
-        socket.emit('scoreUpdate', { score: score });
-    }
-
-    function affCredit (){
-        affiche("credit");
-    }
-
-    function affTop5 (){
-        socket.emit('top5');
-    }
-
-    function affHowToPlay (){
-        affiche("howToPlay");
-    }
 
     function play (){
         masque ("accueil", "game0ver", "winnerText", "looserText", "credit", "instruction", "redLink");
@@ -617,7 +570,6 @@
             //$("overScore").innerHTML = score;
         }
     }
-
     
     function enterFct (){
         
@@ -637,6 +589,19 @@
         masque ("looserText", "winnerText");
         readyToPlay = true;
     }
+    
+    function affCredit (){
+        affiche("credit");
+    }
+
+    function affTop5 (){
+        socket.emit('top5');
+    }
+
+    function affHowToPlay (){
+        affiche("howToPlay");
+    }
+
 
 // *** Fonctions de factorisation
 
