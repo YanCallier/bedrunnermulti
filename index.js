@@ -216,10 +216,15 @@ io.on('connection', function (socket) {
     // Gestion de la fin du jeu
 
     function endGame () {
-        vitesse = 3;
-        partieEnCours = false;
         clearInterval(timer);
+        vitesse = 3;
+        console.log('end');
+        setTimeout(function(){
+            console.log('reboot');
+            partieEnCours = false;
+        },3000)
     }
+
     socket.on('gameOver', function () {
 
         connections[socket.id].runnerState = 'dead';
