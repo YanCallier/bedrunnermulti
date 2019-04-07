@@ -217,6 +217,7 @@
     }
     .red-link div {
        margin-right:30px;
+       cursor: pointer;
     }
 
     .blink {

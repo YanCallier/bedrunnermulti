@@ -553,10 +553,12 @@
         perso.vecteurDown = 0,
         perso.mouvement =  0,
         lastRunner = false;
+
         light.catched = false;
+        ctx.shadowBlur = 'none';
 
         stopJeu = false;
-        runnerState = "running";
+        runnerState = 'running';
         readyToPlay = false;
     }
 
