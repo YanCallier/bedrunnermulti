@@ -18,39 +18,22 @@
     <div id="accueil" class="accueil"></div>
 
     <!-- Buttons & Assets -->
-    <div id="topBar" class="top-bar">
-
-        <div id="score" class="score"><span id="inGameScore"></span> metters</div>
-        <div id="light" class="light">
-            <span id="inGameLight"></span>
-            <div class='cercle-blanc'></div>
-        </div>  
-        <div id="musicPlayer" class="music-player">
-            <img src="img/music_on.svg" alt="On" id="musicOn">
-            <img src="img/music_off.svg" alt="Off" id="musicOff">
-        </div>
-        
-    </div>
 
     <div id="instruction" class="instruction"> 
-        <div id="musicQuestion" class="music-player">
-            Music ? <span id="musicYeh">Yeh !</span>
-            <span id="musicNop">Nop</span>
-        </div>
         <div>Play with the space bar</div>
         <div id="partieEnCours"> Partie en cours ... </div>
         <div id="enterToGo">Press <span class="blink">Enter</span> to start</div>
     </div>
     
     <div id="redLink" class="red-link">
-            <span id="top5Button">Best Runners</span>
-            <span id="creditButton">Credit</span>
+            <div id="howToPlayButton">How to play</div>
+            <div id="top5Button">Best Runners</div>
+            <div id="creditButton">Credit</div>
     </div>
 
     <div class="runners" id="runners" >
-        Connected Runners :
-        <ul id="runnersList">
-        </ul>
+        <h2>Connected Runners</h2>
+        <div id="runnersList"></div>
     </div>
 
     <!-- Jeu -->
@@ -81,13 +64,15 @@
     </div>
     <div id="looserText" class="looser-text">
         <p> 
-            You ran<br/>
-            <span id="overScore"></span><br/>
-            nightmares metters.<br/><br/>
-            You are exhausted ! <br/>
+
+            <!-- <span id="overScore"></span><br/> -->
+            <br/> <br/> 
+            Next time you'll turn on the light
             Press <span class="blink">Enter</span> to retry.
         </p>
     </div>
+
+    <!-- Messages -->
     <div id="credit" class="message closable">
             <h1>Credit</h1>
             <p>
@@ -113,11 +98,18 @@
                 Pass : <input type="password" name='pass'></input>
                 <input type="submit" value='Envoyer'></input>
             </form>
-            <div id="messageBox">sss</div>
     </div>
     <div id="top5" class="message closable">
             <h1>Top 5</h1>
             <div id=top5Liste></div>
+
+    </div>
+    <div id="howToPlay" class="message closable">
+        <h1>How to play</h1>
+        <p>A good interface is like a joke : if you have to explain, it's not that good ...</p>
+        <p>Ok, just use <strong>space bar</strong> to jump from a plateform to another</p>
+        <p>Remember you have to <strong>catch the light</strong></p>
+        <p>It's only appear to the <strong>last runner</strong> in game</p>
 
     </div>
 

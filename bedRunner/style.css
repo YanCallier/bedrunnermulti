@@ -54,13 +54,21 @@
     }
 
     .runners {
-        margin-top:50px;
+        border-radius: 5px;
+        padding : 15px;
+        margin-top:10px;
         margin-left:20px;
-        font-size: 15px;
+        font-size: 12px;
         z-index: 30;
         color: white;
         z-index: 30;
         position: absolute;
+        background-color: rgba(0, 0, 0, 0.2)
+    }
+
+    .runners h2 {
+        font-weight: 400;
+        margin-top: 0;
     }
 
     .instruction, .runners {
@@ -70,7 +78,7 @@
         position: absolute;
     }
 
-    .winner-text, .red-text{
+    .winner-text {
         display: none;
         position:absolute;
         width: 40%;
@@ -118,10 +126,6 @@
     color: #8A2E2F;
     }
 
-    #musicQuestion span{
-       color: #8A2E2F;
-    }
-
     .cercle-blanc {
         height: 10px;
         width: 10px;
@@ -140,7 +144,6 @@
         text-decoration : none;
         border:0;
     }
-
 
     .developper, .graphiste {
         margin : 5%;
@@ -181,6 +184,10 @@
         background-size: cover;
         padding: 50px;
     }
+    .message strong {
+        font-weight: 700;
+        color: #8A2E2F;
+    }
     
 
     .closable::before {
@@ -199,15 +206,17 @@
     }
 
     .red-link {
+        width: 100%;
         font-size:3.5vh;
         color: #8A2E2F;
         position: absolute;
         top: 95%;
-        left:70%;
+        display: flex;
+        justify-content: flex-end;
         z-index: 50;
     }
-    .red-link span {
-       margin-left:30px;
+    .red-link div {
+       margin-right:30px;
     }
 
     .blink {

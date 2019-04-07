@@ -8,16 +8,15 @@
     var ctx;
     var fond;
     var ratioEcran = 1;
-    var score = 0;
-    var nbLight = 0;
+    //var score = 45;
     var rafresh = 0;
     var stopJeu = true;
-    var touched = false;
-    var touchTimer = 0;
     var plateformes = [];
     var vitesse = param.plateforme.vitesse;  // pour l'instant client
     var lastRunner = false;
+    var connectedRunners;
     var runnerState = 'connected';
+    var readyToPlay = true;
 
     //*** Preload de toutes les images appelées dans le canvas avant le lancement du jeu - client
     var imgLoaded = 0;
@@ -78,11 +77,6 @@
         }
     }
 
-    // * Musique non obligatoire pour le lancement du jeu -- client
-    var music = new Audio("http://www.ycallier.fr/bedRunner/img/oogy_sound.wav");
-    music.loop = true;
-    var letTheMusicPlay = true;
-
     window.addEventListener("load", loader); // client conditionné par les donné du server
     function loader (){
 
@@ -93,10 +87,6 @@
         
         addListeners ();
         addSockets();
-        reSizeMobile();
-        
-        // *  Fabrication manuelle de la prmière plateforme 
-        var p1 = new Pateforme (1,100,can.height - (param.plateforme.hauteur / 2), 20);
         
         //* Definition de caractéristiques d'objet
         perso.creaSprite();
@@ -106,30 +96,7 @@
         setInterval(fresh, 20);
         //fresh();
 
-        //* Ajout de la musique du jeu
-        player ();
     };
-
-    function reSizeMobile (){ // on senfiut
-        if (window.innerWidth < 700){
-            // * On donne un ratio
-            ratioEcran = 3;
-            param.plateforme.hauteur = param.plateforme.hauteur/3;
-
-            // * On redimenssione toutes les images de plateformes;
-            for (var i=0;i<nbPlateforme;i++){
-                preLoadImg1[i].width = preLoadImg1[i].width/ratioEcran;
-                preLoadImg1[i].height = preLoadImg1[i].height/ratioEcran;
-                var nbCentre = param.plateforme.sources[i].centre.length;
-                for (var j=0;j < nbCentre;j++){ 
-                    preLoadImg2[i][j].width = preLoadImg2[i][j].width/ratioEcran;
-                    preLoadImg2[i][j].height = preLoadImg2[i][j].height/ratioEcran;
-                }
-                preLoadImg3[i].width = preLoadImg3[i].width/ratioEcran;
-                preLoadImg3[i].height = preLoadImg3[i].height/ratioEcran;
-            }
-        }
-    }
 
     function addListeners () { // client
 
@@ -147,30 +114,6 @@
             }
         });
 
-        document.addEventListener("touchstart", function (infos){
-            touched = true; // * fait tourné le touchTimer
-
-            // * On vérifie avec le touchTimer si l'utilisateur à fait une double tape
-            if (touchTimer < 20) {
-                //* Si ce n'est pas déjà le cas on indique qu'il s'agit d'un mobile dans l'URL (pour le manifest.json)
-                if (window.location.href.indexOf("?") ===  -1){
-                    window.location.href += "?mobile";
-                }
-                enterFct();
-            }
-            else {
-                perso.jump();
-            }
-            
-            // * On remets le timer à 0 pour compter le nombre de rafraichissement jusqu'à la prochaine tape
-            touchTimer = 0;  
-        });
-
-        document.addEventListener("touchend", function (){
-            perso.stopJump();
-                   
-        });
-
         $("creditButton").addEventListener("click", function (){
             affCredit();
         });
@@ -179,18 +122,8 @@
             affTop5();
         });
 
-        $("winnerButton").addEventListener("click", function (){
-            affTop5();
-        });
-
-        $("musicPlayer").addEventListener("click", function (){
-            letTheMusicPlay = !letTheMusicPlay;
-            player ();
-        });
-
-        $("musicQuestion").addEventListener("click", function (){
-            letTheMusicPlay = !letTheMusicPlay;
-            player ();
+        $("howToPlayButton").addEventListener("click", function (){
+            affHowToPlay();
         });
 
         var closable = document.getElementsByClassName("closable");
@@ -229,22 +162,33 @@
         });
 
         socket.on('runnersListUpdate', function (data) {
+
+            connectedRunners = data.connections;
             
             document.getElementById('runnersList').innerHTML = "";
             for (var connection in data.connections) {
+                var scoreRun = data.connections[connection].score;
                 var login = data.connections[connection].login;
                 var state = data.connections[connection].runnerState;
                 var color;
                 if (state === "dead") color = "#8A2E2F";
                 else color = "white"; 
                 
-                document.getElementById('runnersList').innerHTML += "<li id='runner_"+ connection + "'>" + login + " (<span id='score_" + connection + "'>0</span> meters ran)</li>";
+                document.getElementById('runnersList').innerHTML += "<span id='runner_"+ connection + "'> 💀 " + login + " (<span id='score_" + connection + "'>"+ scoreRun + "</span> meters ran)</span>";
                 document.getElementById("runner_" + connection).style.color = color;
             }
         });
         
-        socket.on('scoreUpdate', function (data) {
-            document.getElementById("score_" + data[0]).innerHTML = data[1];
+        // socket.on('scoreUpdate', function (data) {
+        //     document.getElementById("score_" + data[0]).innerHTML = data[1];
+        // });
+
+        socket.on('scoreUpdate', function (score) {
+            for (var runner in connectedRunners){
+                if (connectedRunners[runner].runnerState === 'running'){
+                    document.getElementById("score_" + runner).innerHTML = score;
+                };
+            }
         });
 
         socket.on('play', function () {
@@ -277,15 +221,6 @@
             affiche("top5");
         });
 
-    }
-
-    function enterFct (){
-        // * Pour continuer à jouer après avoir atteint l'objectif principal
-        //if (light.catched) light.continue();
-        console.log(runnerState);
-        
-        if (runnerState === 'dead' || runnerState === 'winner') reload();
-        else socket.emit('play');
     }
 
 
@@ -515,7 +450,6 @@
 
         //* Raffraichissment des particules
         maj: function(){
-            //if (score > 10000) this.redLight(); // * Objectif caché
             this.anim();//* animation
             this.glisse(); //* position
             //* dessin des particules lumineuses et halo
@@ -564,9 +498,8 @@
 
             if (catchX && catchY){
 
-                socket.emit('gotIt', { score: score } );
+                socket.emit('gotIt');
                 runnerState = "winner";
-                music.volume = 0.04; //* On tamise
                 this.catched = true;
                 masque("premierPlan");
 
@@ -575,30 +508,11 @@
                 ctx.shadowBlur = reSizer;
                 ctx.shadowColor = "white";
                 ctx.drawImage(flashMonster, ((window.innerWidth/2) - (reSizer/2)), ((window.innerHeight/2) - (reSizer/2)), reSizer, reSizer);
-                // if (score > 10000) affiche ("redText");
-                // else affiche ("winnerText");
                 affiche ("winnerText");
                 stopJeu = true;
             }
         },
 
-        // //* En partique le jeu n'a pas de fin tant que le joueur n'a pas perdu
-        // continue: function(){
-        //     ctx.shadowBlur = 0;
-        //     this.catched = false;
-        //     this.radius = 100;
-        //     this.centerX = can.width*2;
-        //     affiche("premierPlan");
-        //     masque("winnerText");
-        // },
-
-        // redLight: function (){
-        //     this.ctxP[0].fillStyle = "red";
-        //     this.ctxP[1].fillStyle = "red";
-        //     this.ctxP[2].fillStyle = "red";
-        //     this.ctxP[3].fillStyle = "red";
-        //     this.ctxP[4].fillStyle = "red";
-        // },
     }
 
 
@@ -637,7 +551,7 @@
         if (!stopJeu){
             rafresh += 1; // * nombre de rafraichissement (sert la fonction de ralentissement)
             majCan();
-            majScore();
+           // majScore();
         }
     }
 
@@ -659,52 +573,67 @@
         score += vitesse/2;
         score = parseInt(score);
         socket.emit('scoreUpdate', { score: score });
-        $("inGameScore").innerHTML = score;
-        $("inGameLight").innerHTML = nbLight;
     }
 
     function affCredit (){
         affiche("credit");
-        stopJeu = true;
     }
 
     function affTop5 (){
         socket.emit('top5');
-        stopJeu = true;
+    }
+
+    function affHowToPlay (){
+        affiche("howToPlay");
     }
 
     function play (){
-        masque ("accueil", "game0ver", "winnerText", "looserText", "credit", "instruction");
-        affiche("creditButton");
+        masque ("accueil", "game0ver", "winnerText", "looserText", "credit", "instruction", "redLink");
+
+        // *  Fabrication manuelle de la prmière plateforme 
+        plateformes = [];
+        var p1 = new Pateforme (1,100,can.height - (param.plateforme.hauteur / 2), 20);
+
+        perso.y = 0;
+        perso.vecteurUp = 0,
+        perso.vecteurDown = 0,
+        perso.mouvement =  0,
+
         stopJeu = false;
         runnerState = "running";
+        readyToPlay = false;
     }
 
     function gameOver (){
+        
         if (perso.y > can.width){
             runnerState = "dead";
-            music.volume = 0.04;
             stopJeu = true;
             affiche ("game0ver", "looserText");
-            socket.emit('gameOver', {score: score});
-            $("overScore").innerHTML = score;
+            $("redLink").style.display = "flex";
+            socket.emit('gameOver');
+            //$("overScore").innerHTML = score;
         }
     }
 
-    function player (){
-        music.muted = !letTheMusicPlay;
-        if (letTheMusicPlay){
-            masque ("musicOff", "musicNop");
-            affiche ("musicOn", "musicYeh");
+    
+    function enterFct (){
+        
+        
+        if (readyToPlay) {
+            socket.emit('play');
         }
         else {
-            masque ("musicOn","musicYeh");
-            affiche ("musicOff", "musicNop");
+            reloadFct ();
         }
     }
 
-    function reload (){
-        window.location.reload();
+    function reloadFct () {
+        console.log("salut");
+        
+        affiche ("accueil", "instruction");
+        masque ("looserText", "winnerText");
+        readyToPlay = true;
     }
 
 // *** Fonctions de factorisation
@@ -719,19 +648,19 @@
         } 
     } 
 
-    function masque (){ // client
+    function masque (){
         for (var j = 0; j < arguments.length; j++){
             $(arguments[j]).style.display = "none";
         }
     }
 
-    function affiche (){ // client
+    function affiche (){
         for (var j = 0; j < arguments.length; j++){
             $(arguments[j]).style.display = "inline-block";
         }
     }
 
-    function $(element){ // client
+    function $(element){
         return document.getElementById(element);
     }
 
@@ -739,11 +668,11 @@
         return min + parseInt(Math.random()*(max-min));
     };
 
-    function ç(infos){ // client
+    function ç(infos){
         console.log(infos);
     };
 
-    function fctTest(){ // client
+    function fctTest(){
         ç(arguments);
     };
 })();

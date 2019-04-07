@@ -17,7 +17,7 @@ var param = {
     },
     plateforme: {
         hauteur:500,
-        vitesse: 2,
+        vitesse: 3,
         acceleration: 0.001, // attention ça va très vite.
         espacementMin: 0,
         espacementMax: 0,
