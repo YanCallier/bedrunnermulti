@@ -197,15 +197,13 @@
         });
 
         socket.on('creaNewPlateforme', function (data) {
-            //if(runnerState === 'running'){
-                // for (var prop in data) {
-                // //waitingPlatorme[prop] = data[prop];
-                // }
-            //}
-            new Pateforme (data.newPlateformeSelected, data.eloignement + can.width, can.height - data.hauteur, data.newNbBriqueCentral);
-            //* Suppression de plateforme quand elles sortent de l'écran
-            if (plateformes[0].x + plateformes[0].largeur < 0) plateformes.shift();
-            vitesse = data.vitesse;
+            if(runnerState === 'running'){
+
+                new Pateforme (data.newPlateformeSelected, data.eloignement + can.width, can.height - data.hauteur, data.newNbBriqueCentral);
+                //* Suppression de plateforme quand elles sortent de l'écran
+                vitesse = data.vitesse;
+            }
+
         })
 
         socket.on('lightUp', function () {
@@ -397,7 +395,9 @@
         socket.emit('largeurPlateforme', this.largeur);
 
         // * Raffraichissement de la plateforme
+        
         this.maj = function(){
+            this.destroy();
             this.glisse(); // Position
             this.isFond(); // Définition de la plateforme comme objet de collision en fonction de sa position
             ctx.drawImage(this.image,this.x,this.y);
@@ -422,6 +422,10 @@
                     }
                 }
             } 
+        }
+
+        this.destroy = function (){
+            if (this.x + this.largeur < 0) plateformes.splice( plateformes.indexOf(this), 1 );
         }
     }
 
