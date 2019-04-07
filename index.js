@@ -97,24 +97,9 @@ app.post('/inscription', function(req,res){
 let connections = {};
 let partieEnCours = false;
 let vitesse = 3;
+let score = 0;
 let plareformeOnProgress = false;
-
-// function majTop (){
-//     MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
-//         if (err) console.log ('conection erroor : ' + err);
-//         else console.log ("ok");
-//         const collection = client.db('bedrunnermulti').collection('users');
-//         collection.find({ Perf: { $gt: 0 } }).toArray(function(err, result) {
-//             top = result.sort((a, b) => (a.Perf > b.Perf) ? -1 : 1);
-    
-//         });
-//         // top5 = collection.aggregate(
-//         //     [
-//         //         { $sort : { Perf : 1} }
-//         //     ]
-//         //  )
-//     });
-// }
+let timer;
 
 io.on('connection', function (socket) {
     
@@ -127,6 +112,20 @@ io.on('connection', function (socket) {
     }   
     else {
         socket.emit('hello', socket.handshake.session.message);
+    }
+
+    function runUpdate (){
+        timer = setInterval(function () {
+            score += (parseInt(vitesse)*3);
+            for (var runner in connections){
+                if (connections[runner].runnerState === 'running'){
+                    connections[runner].score = score; 
+                };
+            }
+
+            io.emit('scoreUpdate', score);
+            console.log('score envoyé');
+        },200)
     }
 
     // génération de plateformes 
@@ -151,7 +150,7 @@ io.on('connection', function (socket) {
         let eloignement = 0;
         let hauteur = lanceLeD(500, 100);
         let newNbBriqueCentral = lanceLeD(1,5);
-        vitesse += 0.01;
+        vitesse += 0.1;
 
         io.emit('creaNewPlateforme', {
             newPlateformeSelected: newPlateformeSelected,
@@ -166,12 +165,16 @@ io.on('connection', function (socket) {
 
     // lancement du jeu
     socket.on('play', function () {
+        console.log('coucou');
         if (!partieEnCours){
             for (var runner in connections) {
                 connections[runner].runnerState = 'running';
             }
             setTimeout(UsineDePlateforme, 6000);
             partieEnCours = true;
+            io.emit('runnersListUpdate', { connections: connections});
+            score = 0;
+            runUpdate();
             io.emit('play');
         }
         else {
@@ -181,10 +184,10 @@ io.on('connection', function (socket) {
     }); 
 
     // gestions des scores en temps réèl
-    socket.on('scoreUpdate', function (data) {
-        connections[socket.id].score = data.score;
-        io.emit('scoreUpdate', [socket.id, data.score]);
-    });
+    // socket.on('scoreUpdate', function (data) {
+    //     connections[socket.id].score = data.score;
+    //     io.emit('scoreUpdate', [socket.id, data.score]);
+    // });
 
     // génération et envois des meilleurs scores
     socket.on('top5', function () {
@@ -211,9 +214,16 @@ io.on('connection', function (socket) {
     });
 
     // Gestion de la fin du jeu
-    socket.on('gameOver', function (data) {
+
+    function endGame () {
+        vitesse = 3;
+        partieEnCours = false;
+        clearInterval(timer);
+    }
+    socket.on('gameOver', function () {
 
         connections[socket.id].runnerState = 'dead';
+        socket.emit('scoreUpdate', score);
         io.emit('runnersListUpdate', { connections: connections});
         
 
@@ -223,14 +233,14 @@ io.on('connection', function (socket) {
         }
 
         if ( nbRunner === 1) io.emit('lightUp');
-        if ( nbRunner === 0) partieEnCours = false;
+        if ( nbRunner === 0) endGame ();
 
     });
 
     // Le dernier joueur doit "attraper la lumière" pour pouvoir enregistrer son score
-    socket.on('gotIt', function (data) {
+    socket.on('gotIt', function () {
         connections[socket.id].runnerState = "winner";
-        partieEnCours = false;
+        endGame();
 
         MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
             if (err) console.log ('connect' + err);
@@ -238,12 +248,12 @@ io.on('connection', function (socket) {
 
             collection.find({ "login" : socket.handshake.session.login }).toArray(function(err, result) {
                 if (result.length === 1){
-                    if (!result[0].Perf || result[0].Perf < data.score) {
-                        console.log ("ok" + data.score);
+                    if (!result[0].Perf || result[0].Perf < score) {
+                        console.log ("ok" + score);
                         try {
                             collection.updateOne(
                                { "login" : socket.handshake.session.login },
-                               { $set: { "Perf" : data.score } },
+                               { $set: { "Perf" : score } },
                                {upsert: true}
                             );
                         } catch (e) {
