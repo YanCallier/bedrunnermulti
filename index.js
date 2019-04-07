@@ -106,7 +106,7 @@ io.on('connection', function (socket) {
     // gestion connection
     if (socket.handshake.session.login) {
         connections[socket.id]={login: socket.handshake.session.login, runnerState : 'connected', score: 0};
-        console.log("conected!");
+        console.log(connections);
         io.emit('runnersListUpdate', { connections: connections });
         io.emit('partieEnCours', partieEnCours);
     }   
