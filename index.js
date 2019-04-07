@@ -103,10 +103,10 @@ let timer;
 
 io.on('connection', function (socket) {
     
+    console.log("saluuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu" + connections);
     // gestion connection
     if (socket.handshake.session.login) {
         connections[socket.id]={login: socket.handshake.session.login, runnerState : 'connected', score: 0};
-        console.log("saluuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu" + connections);
         io.emit('runnersListUpdate', { connections: connections });
         io.emit('partieEnCours', partieEnCours);
     }   
