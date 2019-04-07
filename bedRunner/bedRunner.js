@@ -174,7 +174,7 @@
                 if (state === "dead") color = "#8A2E2F";
                 else color = "white"; 
                 
-                document.getElementById('runnersList').innerHTML += "<span id='runner_"+ connection + "'> 💀 " + login + " (<span id='score_" + connection + "'>"+ scoreRun + "</span> meters ran)</span>";
+                document.getElementById('runnersList').innerHTML += "<div id='runner_"+ connection + "'> 💀 " + login + " (<span id='score_" + connection + "'>"+ scoreRun + "</span> meters ran)</div>";
                 document.getElementById("runner_" + connection).style.color = color;
             }
         });
