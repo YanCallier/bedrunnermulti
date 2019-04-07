@@ -98,7 +98,7 @@ let connections = {};
 let partieEnCours = false;
 let vitesse = 3;
 let score = 0;
-let plareformeOnProgress = false;
+let plateformeOnProgress = false;
 let timer;
 
 io.on('connection', function (socket) {
@@ -130,8 +130,8 @@ io.on('connection', function (socket) {
 
     // génération de plateformes 
     socket.on('largeurPlateforme', function (largeur) {
-        if (!plareformeOnProgress) {
-            plareformeOnProgress = true;
+        if (!plateformeOnProgress) {
+            plateformeOnProgress = true;
             let eloignement = 100;
             let tempo = ((largeur + eloignement) / parseInt(vitesse)) * 20;
             if (partieEnCours){
@@ -146,6 +146,7 @@ io.on('connection', function (socket) {
 
     function UsineDePlateforme (){
         // Calcule des paramètres aléatoires
+        console.log(plateformeOnProgress);
         let newPlateformeSelected = lanceLeD(0,4);
         let eloignement = 0;
         let hauteur = lanceLeD(500, 100);
@@ -159,8 +160,7 @@ io.on('connection', function (socket) {
             newNbBriqueCentral: newNbBriqueCentral,
             vitesse : vitesse,
         });
-        plareformeOnProgress = false;
-        //io.emit ('majVitesse', vitesse);
+        plateformeOnProgress = false;
     }
 
     // lancement du jeu
@@ -181,12 +181,6 @@ io.on('connection', function (socket) {
             socket.emit('pleaseWait');
         }
     }); 
-
-    // gestions des scores en temps réèl
-    // socket.on('scoreUpdate', function (data) {
-    //     connections[socket.id].score = data.score;
-    //     io.emit('scoreUpdate', [socket.id, data.score]);
-    // });
 
     // génération et envois des meilleurs scores
     socket.on('top5', function () {
