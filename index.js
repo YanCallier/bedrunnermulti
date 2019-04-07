@@ -130,7 +130,7 @@ io.on('connection', function (socket) {
     // génération de plateformes 
     socket.on('largeurPlateforme', function (largeur) {
         if (!plateformeOnProgress) {
-            console.log ('recçu');
+            console.log(connections[socket.id].login + " " + connections[socket.id].runnerState)
             plateformeOnProgress = true;
             let eloignement = 100;
             let tempo = ((largeur + eloignement) / parseInt(vitesse)) * 20;
