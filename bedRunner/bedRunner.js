@@ -580,11 +580,12 @@
     
     function enterFct (){
         
-        
         if (readyToPlay) {
+            console.log(readyToPlay);
             socket.emit('play');
         }
         else {
+            console.log(readyToPlay);
             reloadFct ();
         }
     }
