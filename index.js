@@ -178,7 +178,6 @@ io.on('connection', function (socket) {
             io.emit('play');
         }
         else {
-            if (connections[socket.id].runnerState != 'running')
             socket.emit('pleaseWait');
         }
     }); 
