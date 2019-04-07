@@ -553,6 +553,7 @@
         perso.vecteurDown = 0,
         perso.mouvement =  0,
         lastRunner = false;
+        light.catched = false;
 
         stopJeu = false;
         runnerState = "running";
