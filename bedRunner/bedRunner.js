@@ -558,6 +558,7 @@
         ctx.shadowBlur = 'none';
         ctx.shadowColor = 'black';
 
+        readyToPlay = false;
         stopJeu = false;
         runnerState = 'running';
     }
@@ -575,18 +576,15 @@
     function endGame () {
         stopJeu = true;
         $("redLink").style.display = "flex";
-        readyToPlay = false;
     }
     
     function enterFct (){
         
         if (readyToPlay) {
-            console.log(readyToPlay);
             socket.emit('play');
         }
         else {
-            console.log(readyToPlay);
-            reloadFct ();
+            if (runnerState != 'running')  reloadFct ();
         }
     }
 
