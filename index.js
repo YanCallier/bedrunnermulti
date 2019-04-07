@@ -124,13 +124,13 @@ io.on('connection', function (socket) {
             }
 
             io.emit('scoreUpdate', score);
-            console.log('score envoyé');
         },200)
     }
 
     // génération de plateformes 
     socket.on('largeurPlateforme', function (largeur) {
         if (!plateformeOnProgress) {
+            console.log ('recçu');
             plateformeOnProgress = true;
             let eloignement = 100;
             let tempo = ((largeur + eloignement) / parseInt(vitesse)) * 20;
@@ -146,7 +146,6 @@ io.on('connection', function (socket) {
 
     function UsineDePlateforme (){
         // Calcule des paramètres aléatoires
-        console.log(plateformeOnProgress);
         let newPlateformeSelected = lanceLeD(0,4);
         let eloignement = 0;
         let hauteur = lanceLeD(500, 100);
@@ -160,12 +159,12 @@ io.on('connection', function (socket) {
             newNbBriqueCentral: newNbBriqueCentral,
             vitesse : vitesse,
         });
+        console.log ('envoyé');
         plateformeOnProgress = false;
     }
 
     // lancement du jeu
     socket.on('play', function () {
-        console.log('coucou');
         if (!partieEnCours){
             for (var runner in connections) {
                 connections[runner].runnerState = 'running';
@@ -213,7 +212,6 @@ io.on('connection', function (socket) {
         vitesse = 3;
         console.log('end');
         setTimeout(function(){
-            console.log('reboot');
             partieEnCours = false;
         },3000)
     }
