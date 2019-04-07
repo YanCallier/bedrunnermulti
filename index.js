@@ -159,9 +159,8 @@ io.on('connection', function (socket) {
             hauteur: hauteur,
             newNbBriqueCentral: newNbBriqueCentral,
             vitesse : vitesse,
-        }, function (){
-            plateformeOnProgress = false;
         });
+        plateformeOnProgress = false;
     }
 
     // lancement du jeu
