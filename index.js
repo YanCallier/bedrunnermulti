@@ -134,6 +134,7 @@ io.on('connection', function (socket) {
             plateformeOnProgress = true;
             let eloignement = 100;
             let tempo = ((largeur + eloignement) / parseInt(vitesse)) * 20;
+            console.log ('temmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmpo : ' + tempo);
             if (partieEnCours){
                 setTimeout(UsineDePlateforme, tempo);
             }
@@ -157,7 +158,7 @@ io.on('connection', function (socket) {
             eloignement: eloignement,
             hauteur: hauteur,
             newNbBriqueCentral: newNbBriqueCentral,
-            vitesse : vitesse,
+            vitesse : parseInt(vitesse),
         });
         console.log ('envoyé');
         plateformeOnProgress = false;
