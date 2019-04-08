@@ -580,6 +580,7 @@
     }
 
     function endGame () {
+        vitesse = 3;
         stopJeu = true;
         $("redLink").style.display = "flex";
     }
