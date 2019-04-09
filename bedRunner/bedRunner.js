@@ -196,7 +196,7 @@
         });
 
         socket.on('creaNewPlateforme', function (data) {
-            var lastPlatforme = plateformes[plateformes.length];
+            var lastPlatforme = plateformes[plateformes.length - 1];
             
            //console.log(plateformes);
             //if (plateformes[plateformes.length])
