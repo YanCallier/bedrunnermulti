@@ -196,9 +196,11 @@
         });
 
         socket.on('creaNewPlateforme', function (data) {
+            var lastPlatforme = plateforme[plateformes.length];
+            
            console.log(plateformes);
             //if (plateformes[plateformes.length])
-            if(runnerState === 'running'){
+            if(runnerState === 'running' && (lastPlatforme.x + lastPlatforme.largeur) < can.width){
 
                 new Pateforme (data.newPlateformeSelected, data.eloignement + can.width, can.height - data.hauteur, data.newNbBriqueCentral);
                 vitesse = data.vitesse;
@@ -425,12 +427,12 @@
 
         this.destroy = function (){
             if (this.x + this.largeur < 0) plateformes.splice( plateformes.indexOf(this), 1 );
-            if (plateformes.indexOf(this) > 0) {
+            // if (plateformes.indexOf(this) > 0) {
 
-                var sidePlateforme = plateformes[plateformes.indexOf(this)-1];
-                console.log(sidePlateforme);
-                if (this.x < sidePlateforme.x + sidePlateforme.largeur)  plateformes.splice( plateformes.indexOf(this), 1 );
-            }
+            //     var sidePlateforme = plateformes[plateformes.indexOf(this)-1];
+            //     console.log(sidePlateforme);
+            //     if (this.x < sidePlateforme.x + sidePlateforme.largeur)  plateformes.splice( plateformes.indexOf(this), 1 );
+            // }
             //if (plateformes.indexOf(this) > 9) plateformes.splice( plateformes.indexOf(this), 1 );
         }
     }
