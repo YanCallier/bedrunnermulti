@@ -196,7 +196,7 @@
         });
 
         socket.on('creaNewPlateforme', function (data) {
-           console.log(plateformes.length);
+           console.log(plateformes);
             //if (plateformes[plateformes.length])
             if(runnerState === 'running'){
 
@@ -425,6 +425,8 @@
 
         this.destroy = function (){
             if (this.x + this.largeur < 0) plateformes.splice( plateformes.indexOf(this), 1 );
+            var sidePlateforme = plateformes[plateformes.indexOf(this)-1]
+            if (this.x < sidePlateforme.x + sidePlateforme.largeur)  plateformes.splice( plateformes.indexOf(this), 1 );
             //if (plateformes.indexOf(this) > 9) plateformes.splice( plateformes.indexOf(this), 1 );
         }
     }
