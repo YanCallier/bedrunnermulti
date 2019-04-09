@@ -196,14 +196,17 @@
         });
 
         socket.on('creaNewPlateforme', function (data) {
-            var lastPlatforme = plateforme[plateformes.length];
+            var lastPlatforme = plateformes[plateformes.length];
             
-           console.log(plateformes);
+           //console.log(plateformes);
             //if (plateformes[plateformes.length])
             if(runnerState === 'running' && (lastPlatforme.x + lastPlatforme.largeur) < can.width){
 
                 new Pateforme (data.newPlateformeSelected, data.eloignement + can.width, can.height - data.hauteur, data.newNbBriqueCentral);
                 vitesse = data.vitesse;
+            }
+            else {
+                console.log (lastPlatforme.x + lastPlatforme.largeur)
             }
 
         })
