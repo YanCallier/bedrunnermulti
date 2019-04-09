@@ -191,7 +191,7 @@
             }
         });
 
-        socket.on('play', function () {
+        socket.on('play', function () { 
             play();
         });
 
@@ -425,7 +425,7 @@
 
         this.destroy = function (){
             if (this.x + this.largeur < 0) plateformes.splice( plateformes.indexOf(this), 1 );
-            if (plateformes.indexOf(this) > 9) plateformes.splice( plateformes.indexOf(this), 1 );
+            //if (plateformes.indexOf(this) > 9) plateformes.splice( plateformes.indexOf(this), 1 );
         }
     }
 
