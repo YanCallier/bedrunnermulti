@@ -544,6 +544,7 @@
     }
 
     function majCan() {
+            console.log ("alive")
             ctx.clearRect(0, 0, can.width, can.height);
             perso.maj();
             fond = can.height + 1000; // * Avant maj des plataformes
