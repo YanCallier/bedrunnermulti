@@ -522,8 +522,8 @@
 
                 //* Dessin de l'écran de victoire et affichage des textes
                 var reSizer = window.innerHeight*1.5;
-                ctx.shadowBlur = reSizer;
-                ctx.shadowColor = "white";
+                //ctx.shadowBlur = reSizer;
+                //ctx.shadowColor = "white";
                 ctx.drawImage(flashMonster, ((window.innerWidth/2) - (reSizer/2)), ((window.innerHeight/2) - (reSizer/2)), reSizer, reSizer);
                 affiche ("winnerText");
                 endGame ();
@@ -590,6 +590,8 @@
     }
 
     function endGame () {
+        light.centerX = 1500;
+        lastRunner = false;
         vitesse = 3;
         stopJeu = true;
         $("redLink").style.display = "flex";
