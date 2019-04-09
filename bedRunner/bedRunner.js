@@ -198,10 +198,11 @@
         });
 
         socket.on('creaNewPlateforme', function (data) {
+            plateformes[plateformes.length]
+            //if (plateformes[plateformes.length])
             if(runnerState === 'running'){
 
                 new Pateforme (data.newPlateformeSelected, data.eloignement + can.width, can.height - data.hauteur, data.newNbBriqueCentral);
-                //* Suppression de plateforme quand elles sortent de l'écran
                 vitesse = data.vitesse;
             }
 
@@ -535,7 +536,6 @@
     }
 
     function majCan() {
-            console.log(vitesse);
             ctx.clearRect(0, 0, can.width, can.height);
             perso.maj();
             fond = can.height + 1000; // * Avant maj des plataformes
