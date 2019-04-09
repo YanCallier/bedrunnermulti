@@ -425,8 +425,11 @@
 
         this.destroy = function (){
             if (this.x + this.largeur < 0) plateformes.splice( plateformes.indexOf(this), 1 );
-            var sidePlateforme = plateformes[plateformes.indexOf(this)-1]
-            if (this.x < sidePlateforme.x + sidePlateforme.largeur)  plateformes.splice( plateformes.indexOf(this), 1 );
+            if (plateformes.length > 2) {
+
+                var sidePlateforme = plateformes[plateformes.indexOf(this)-1]
+                if (this.x < sidePlateforme.x + sidePlateforme.largeur)  plateformes.splice( plateformes.indexOf(this), 1 );
+            }
             //if (plateformes.indexOf(this) > 9) plateformes.splice( plateformes.indexOf(this), 1 );
         }
     }
