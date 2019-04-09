@@ -164,7 +164,6 @@
         socket.on('runnersListUpdate', function (data) {
 
             connectedRunners = data.connections;
-            console.log (data.connections);
             
             document.getElementById('runnersList').innerHTML = "";
             for (var connection in data.connections) {
@@ -185,7 +184,6 @@
         // });
 
         socket.on('scoreUpdate', function (score) {
-            console.log('score reçu');
             for (var runner in connectedRunners){
                 if (connectedRunners[runner].runnerState === 'running'){
                     document.getElementById("score_" + runner).innerHTML = score;
@@ -198,7 +196,7 @@
         });
 
         socket.on('creaNewPlateforme', function (data) {
-            plateformes[plateformes.length]
+           console.log(plateformes.length);
             //if (plateformes[plateformes.length])
             if(runnerState === 'running'){
 
@@ -213,7 +211,6 @@
         });
 
         socket.on('top5', function (top) {
-            console.log(top);
             $('top5Liste').innerHTML = "";
             for (i=0; top[i]; i++){
                 $('top5Liste').innerHTML += top[i].login + " : " + top[i].perf + " meters ran</br>";
@@ -597,7 +594,6 @@
     }
 
     function reloadFct () {
-        console.log("salut");
         
         affiche ("accueil", "instruction");
         masque ("looserText", "winnerText");
