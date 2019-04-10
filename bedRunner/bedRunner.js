@@ -171,10 +171,17 @@
                 var login = data.connections[connection].login;
                 var state = data.connections[connection].runnerState;
                 var color;
-                if (state === "dead") color = "#8A2E2F";
-                else color = "white"; 
+                var headPicture
+                if (state === "dead"){
+                    color = "#8A2E2F";
+                    headPicture = "💀";
+                } 
+                else {
+                    color = "white";
+                    headPicture = "";
+                }            
                 
-                document.getElementById('runnersList').innerHTML += "<div id='runner_"+ connection + "'> 💀 " + login + " (<span id='score_" + connection + "'>"+ scoreRun + "</span> meters ran)</div>";
+                document.getElementById('runnersList').innerHTML += "<div id='runner_"+ connection + "'> "+ headPicture + " " + login + " (<span id='score_" + connection + "'>"+ scoreRun + "</span> meters ran)</div>";
                 document.getElementById("runner_" + connection).style.color = color;
             }
         });
