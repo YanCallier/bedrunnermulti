@@ -151,7 +151,7 @@ io.on('connection', function (socket) {
         let eloignement = 0;
         let hauteur = lanceLeD(500, 100);
         let newNbBriqueCentral = lanceLeD(1,5);
-        //vitesse += 0.1;
+        vitesse += 0.1;
 
         io.emit('creaNewPlateforme', {
             newPlateformeSelected: newPlateformeSelected,
