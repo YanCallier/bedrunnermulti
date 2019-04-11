@@ -607,7 +607,7 @@
 
     function endGame () {
         light.centerX = 1500;
-        lastRunner = false;
+        //lastRunner = false;
         vitesse = 3;
         stopJeu = true;
         $("redLink").style.display = "flex";
