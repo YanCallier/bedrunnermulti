@@ -198,6 +198,13 @@
             }
         });
 
+        var fraicheur = 0;
+        socket.on('fresh', function () {
+            fraicheur += 1;
+            console.log('fresh from serveur : ' + fraicheur);
+        });
+
+
         socket.on('play', function () { 
             play();
         });
@@ -545,6 +552,7 @@
     function fresh (){
         if (!stopJeu){
             rafresh += 1; // * nombre de rafraichissement (sert la fonction de ralentissement)
+            console.log ('fresh from client : ' + rafresh)
             majCan();
            // majScore();
         }
