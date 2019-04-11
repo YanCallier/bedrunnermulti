@@ -200,8 +200,9 @@
 
         var fraicheur = 0;
         socket.on('fresh', function () {
-            fraicheur += 1;
-            console.log('fresh from serveur : ' + fraicheur);
+            rafresh += 1;
+            //console.log('fresh from serveur : ' + fraicheur);
+            majCan();
         });
 
 
@@ -551,9 +552,9 @@
 
     function fresh (){
         if (!stopJeu){
-            rafresh += 1; // * nombre de rafraichissement (sert la fonction de ralentissement)
-            console.log ('fresh from client : ' + rafresh)
-            majCan();
+            //rafresh += 1; // * nombre de rafraichissement (sert la fonction de ralentissement)
+            //console.log ('fresh from client : ' + rafresh)
+            //majCan();
            // majScore();
         }
     }
