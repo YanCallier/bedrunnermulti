@@ -200,9 +200,10 @@
 
         var fraicheur = 0;
         socket.on('fresh', function () {
+            if (!stopJeu){
             rafresh += 1;
-            //console.log('fresh from serveur : ' + fraicheur);
             majCan();
+            }
         });
 
 
