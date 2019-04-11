@@ -13,7 +13,7 @@
     var stopJeu = true;
     var plateformes = [];
     var vitesse = param.plateforme.vitesse;  // pour l'instant client
-    var lastRunner = false;
+    var lastRunner = true;
     var connectedRunners;
     var runnerState = 'connected';
     var readyToPlay = true;
@@ -560,7 +560,6 @@
     }
 
     function majCan() {
-            console.log ("alive")
             ctx.clearRect(0, 0, can.width, can.height);
             perso.maj();
             fond = can.height + 1000; // * Avant maj des plataformes
@@ -574,6 +573,7 @@
 
     function play (){
         masque ("accueil", "game0ver", "winnerText", "looserText", "credit", "instruction", "redLink");
+        affiche ("premierPlan");
 
         // *  Fabrication manuelle de la prmière plateforme 
         plateformes = [];
