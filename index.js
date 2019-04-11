@@ -99,7 +99,9 @@ let partieEnCours = false;
 let vitesse = 3;
 let score = 0;
 let plateformeOnProgress = false;
-let timer;
+let scoreTimer;
+let freshTimer;
+
 
 io.on('connection', function (socket) {
     
@@ -115,7 +117,7 @@ io.on('connection', function (socket) {
     }
 
     function runUpdate (){
-        timer = setInterval(function () {
+        scoreTimer = setInterval(function () {
             score += (parseInt(vitesse)*3);
             for (var runner in connections){
                 if (connections[runner].runnerState === 'running'){
@@ -125,6 +127,12 @@ io.on('connection', function (socket) {
 
             io.emit('scoreUpdate', score);
         },200)
+    }
+
+    function freshTheClient (){
+        freshTimer = setInterval (function (){
+            io.emit('fresh');
+        },20)
     }
 
     // génération de plateformes 
@@ -175,6 +183,7 @@ io.on('connection', function (socket) {
             io.emit('runnersListUpdate', { connections: connections});
             score = 0;
             runUpdate();
+            freshTheClient();
             io.emit('play');
         }
         else {
@@ -209,7 +218,8 @@ io.on('connection', function (socket) {
     // Gestion de la fin du jeu
 
     function endGame () {
-        clearInterval(timer);
+        clearInterval(scoreTimer);
+        clearInterval(freshTimer);
         vitesse = 3;
         console.log('end');
         setTimeout(function(){
