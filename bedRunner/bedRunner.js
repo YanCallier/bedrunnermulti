@@ -13,7 +13,7 @@
     var stopJeu = true;
     var plateformes = [];
     var vitesse = param.plateforme.vitesse;  // pour l'instant client
-    var lastRunner = true;
+    var lastRunner = false;
     var connectedRunners;
     var runnerState = 'connected';
     var readyToPlay = true;
@@ -583,7 +583,7 @@
         perso.vecteurUp = 0,
         perso.vecteurDown = 0,
         perso.mouvement =  0,
-        lastRunner = false;
+        lastRunner = true;
 
         light.catched = false;
         light.centerX = 1500;
