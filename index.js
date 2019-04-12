@@ -96,7 +96,7 @@ app.post('/inscription', function(req,res){
 
 let connections = {};
 let partieEnCours = false;
-let vitesse = 3;
+let vitesse = 6;
 let score = 0;
 let plateformeOnProgress = false;
 let scoreTimer;
