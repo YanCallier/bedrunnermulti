@@ -227,15 +227,7 @@ io.on('connection', function (socket) {
         },3000)
     }
 
-    socket.on('gameOver', function () {
-        if (connections[socket.id]) {
-
-            connections[socket.id].runnerState = 'dead';
-            socket.emit('scoreUpdate', score);
-            io.emit('runnersListUpdate', { connections: connections});
-        }
-        
-
+    function runnerCount (){
         let nbRunner = 0;
         for (var runner in connections) {
             if (connections[runner].runnerState === 'running') nbRunner += 1;
@@ -243,7 +235,16 @@ io.on('connection', function (socket) {
 
         if ( nbRunner === 1) io.emit('lightUp');
         if ( nbRunner === 0) endGame ();
+    }
 
+    socket.on('gameOver', function () {
+        if (connections[socket.id]) {
+
+            connections[socket.id].runnerState = 'dead';
+            socket.emit('scoreUpdate', score);
+            io.emit('runnersListUpdate', { connections: connections});
+        }
+        runnerCount ();
     });
 
     // Le dernier joueur doit "attraper la lumière" pour pouvoir enregistrer son score
@@ -281,11 +282,12 @@ io.on('connection', function (socket) {
     // gestion de la déconnection
     socket.on('disconnect', (reason) => {
         console.log(('Événement socket.io [disconnect]socket.id : ' + socket.id +'reason : ' + reason));
-        if (connections[socket.id]) {
-            connections[socket.id].runnerState = 'dead';
-            delete connections[socket.id];
-        }
-        io.emit('runnersListUpdate', { connections: connections});
+            if (connections[socket.id]) {
+                connections[socket.id].runnerState = 'dead';
+                runnerCount ();
+                delete connections[socket.id];
+                io.emit('runnersListUpdate', { connections: connections});
+            }
         }
     );
 });
