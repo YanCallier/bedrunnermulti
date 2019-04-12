@@ -108,9 +108,12 @@ io.on('connection', function (socket) {
     console.log("saluuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu" + connections);
     // gestion connection
     if (socket.handshake.session.login) {
-        connections[socket.id]={login: socket.handshake.session.login, runnerState : 'connected', score: 0};
-        io.emit('runnersListUpdate', { connections: connections });
-        io.emit('partieEnCours', partieEnCours);
+        if (connections[socket.id]){
+
+            connections[socket.id]={login: socket.handshake.session.login, runnerState : 'connected', score: 0};
+            io.emit('runnersListUpdate', { connections: connections });
+            io.emit('partieEnCours', partieEnCours);
+        }
     }   
     else {
         socket.emit('hello', socket.handshake.session.message);
@@ -226,10 +229,12 @@ io.on('connection', function (socket) {
     }
 
     socket.on('gameOver', function () {
+        if (connections[socket.id]) {
 
-        connections[socket.id].runnerState = 'dead';
-        socket.emit('scoreUpdate', score);
-        io.emit('runnersListUpdate', { connections: connections});
+            connections[socket.id].runnerState = 'dead';
+            socket.emit('scoreUpdate', score);
+            io.emit('runnersListUpdate', { connections: connections});
+        }
         
 
         let nbRunner = 0;
@@ -244,8 +249,11 @@ io.on('connection', function (socket) {
 
     // Le dernier joueur doit "attraper la lumière" pour pouvoir enregistrer son score
     socket.on('gotIt', function () {
+        if (connections[socket.id]) {
+
         connections[socket.id].runnerState = "winner";
         endGame();
+        }
 
         MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
             if (err) console.log ('connect' + err);
@@ -274,7 +282,9 @@ io.on('connection', function (socket) {
     // gestion de la déconnection
     socket.on('disconnect', (reason) => {
         console.log(('Événement socket.io [disconnect]socket.id : ' + socket.id +'reason : ' + reason));
-        delete connections[socket.id];
+        if (connections[socket.id]) {
+            delete connections[socket.id];
+        }
         io.emit('runnersListUpdate', { connections: connections});
         }
     );
