@@ -93,7 +93,7 @@
         light.creaCanLight(); 
  
         //* Raffraichissements
-        setInterval(fresh, 20);
+        //setInterval(fresh, 20);
         //fresh();
 
     };
@@ -198,7 +198,6 @@
             }
         });
 
-        var fraicheur = 0;
         socket.on('fresh', function () {
             if (!stopJeu){
             rafresh += 1;
@@ -213,18 +212,11 @@
 
         socket.on('creaNewPlateforme', function (data) {
             var lastPlatforme = plateformes[plateformes.length - 1];
-            
-           //console.log(plateformes);
-            //if (plateformes[plateformes.length])
-            if(runnerState === 'running' && (lastPlatforme.x + lastPlatforme.largeur) < can.width){
 
+            if(runnerState === 'running' && (lastPlatforme.x + lastPlatforme.largeur) < can.width){
                 new Pateforme (data.newPlateformeSelected, data.eloignement + can.width, can.height - data.hauteur, data.newNbBriqueCentral);
                 vitesse = data.vitesse;
             }
-            else {
-                console.log (lastPlatforme.x + lastPlatforme.largeur)
-            }
-
         })
 
         socket.on('lightUp', function () {
@@ -375,9 +367,10 @@
 
         //* Calcule de la largeur : addition de toutes les largeurs d'images
         this.largeur = this.imgDebut.width + (nbBriqueCentral*this.imgCentre[0].width) + this.imgFin.width;
+
+        //* Previent le serveur que la plateforme est créée
         socket.emit('largeurPlateforme', this.largeur);
         
-
         //* L'image finale sera définie dans un canvas à la création de la plateforme
         this.image = document.createElement ("canvas");
         this.image.width = this.largeur;
@@ -395,15 +388,15 @@
             
             var XPos = (i*this.imgCentre[centreSelected].width) + this.imgDebut.width; // * Position
 
-                //* On vérifie si la brique est un ralentisseur
-                if (centreImage.src.substring(centreImage.src.length-16) === "ralentisseur.png"){
-                    if (this.ralentisseur) {
-                        this.ralentisseur[this.ralentisseur.length] = [XPos, XPos + centreImage.width];
-                    }
-                    else {
-                        this.ralentisseur = [[XPos, XPos + centreImage.width]];   
-                    }
-                }
+                // //* On vérifie si la brique est un ralentisseur
+                // if (centreImage.src.substring(centreImage.src.length-16) === "ralentisseur.png"){
+                //     if (this.ralentisseur) {
+                //         this.ralentisseur[this.ralentisseur.length] = [XPos, XPos + centreImage.width];
+                //     }
+                //     else {
+                //         this.ralentisseur = [[XPos, XPos + centreImage.width]];   
+                //     }
+                // }
             this.plateformeCtx.drawImage(centreImage,XPos,0,centreImage.width,centreImage.height);
         }
 
@@ -446,13 +439,6 @@
 
         this.destroy = function (){
             if (this.x + this.largeur < 0) plateformes.splice( plateformes.indexOf(this), 1 );
-            // if (plateformes.indexOf(this) > 0) {
-
-            //     var sidePlateforme = plateformes[plateformes.indexOf(this)-1];
-            //     console.log(sidePlateforme);
-            //     if (this.x < sidePlateforme.x + sidePlateforme.largeur)  plateformes.splice( plateformes.indexOf(this), 1 );
-            // }
-            //if (plateformes.indexOf(this) > 9) plateformes.splice( plateformes.indexOf(this), 1 );
         }
     }
 
@@ -551,14 +537,14 @@
 
 ////////////// *** Fonctions de mise à jours générales du jeu ***
 
-    function fresh (){
-        if (!stopJeu){
-            //rafresh += 1; // * nombre de rafraichissement (sert la fonction de ralentissement)
-            //console.log ('fresh from client : ' + rafresh)
-            //majCan();
-           // majScore();
-        }
-    }
+    // function fresh (){
+    //     if (!stopJeu){
+    //         //rafresh += 1; // * nombre de rafraichissement (sert la fonction de ralentissement)
+    //         //console.log ('fresh from client : ' + rafresh)
+    //         //majCan();
+    //        // majScore();
+    //     }
+    // }
 
     function majCan() {
             ctx.clearRect(0, 0, can.width, can.height);
@@ -584,7 +570,7 @@
         perso.vecteurUp = 0,
         perso.vecteurDown = 0,
         perso.mouvement =  0,
-        lastRunner = false;
+        lastRunner = true;
 
         light.catched = false;
         light.centerX = 1500;
