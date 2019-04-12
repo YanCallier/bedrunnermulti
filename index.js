@@ -281,6 +281,7 @@ io.on('connection', function (socket) {
     socket.on('disconnect', (reason) => {
         console.log(('Événement socket.io [disconnect]socket.id : ' + socket.id +'reason : ' + reason));
         if (connections[socket.id]) {
+            connections[socket.id].runnerState = 'dead';
             delete connections[socket.id];
         }
         io.emit('runnersListUpdate', { connections: connections});
