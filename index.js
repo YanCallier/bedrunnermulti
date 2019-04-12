@@ -186,6 +186,7 @@ io.on('connection', function (socket) {
             io.emit('play');
         }
         else {
+            console.log(connections);
             socket.emit('pleaseWait');
         }
     }); 
