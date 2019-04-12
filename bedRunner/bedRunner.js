@@ -584,7 +584,7 @@
         perso.vecteurUp = 0,
         perso.vecteurDown = 0,
         perso.mouvement =  0,
-        lastRunner = true;
+        lastRunner = false;
 
         light.catched = false;
         light.centerX = 1500;
