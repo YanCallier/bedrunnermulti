@@ -108,12 +108,10 @@ io.on('connection', function (socket) {
     console.log("saluuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu" + connections);
     // gestion connection
     if (socket.handshake.session.login) {
-        if (connections[socket.id]){
 
-            connections[socket.id]={login: socket.handshake.session.login, runnerState : 'connected', score: 0};
-            io.emit('runnersListUpdate', { connections: connections });
-            io.emit('partieEnCours', partieEnCours);
-        }
+        connections[socket.id]={login: socket.handshake.session.login, runnerState : 'connected', score: 0};
+        io.emit('runnersListUpdate', { connections: connections });
+        io.emit('partieEnCours', partieEnCours);
     }   
     else {
         socket.emit('hello', socket.handshake.session.message);
