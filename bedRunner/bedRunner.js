@@ -16,7 +16,7 @@
     var lastRunner = false;
     var connectedRunners;
     var runnerState = 'connected';
-    var readyToPlay = true;
+    var readyToPlay = false;
 
     //*** Preload de toutes les images appelées dans le canvas avant le lancement du jeu - client
     var imgLoaded = 0;
@@ -156,6 +156,7 @@
                 masque ('partieEnCours');
                 affiche ('enterToGo');
             }
+            readyToPlay = true;
         });
 
         socket.on ('welcome', function (){
@@ -168,8 +169,6 @@
 
         // Panneau des scores
         socket.on('runnersListUpdate', function (data) {
-
-            connectedRunners = data.connections;
             
             document.getElementById('runnersList').innerHTML = "";
             for (var connection in data.connections) {
@@ -609,7 +608,7 @@
             socket.emit('play');
         }
         else {
-            if (runnerState != 'running')  reloadFct ();
+            if (runnerState === 'dead' || runnerState === 'winner')  reloadFct ();
         }
     }
 
