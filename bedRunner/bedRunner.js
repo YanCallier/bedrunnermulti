@@ -1,7 +1,6 @@
 
-
 (function () {
-    "use strict"
+"use strict"
 
 //////////////////////////////////////////////////////////////////// Variables Globales
 
@@ -235,8 +234,6 @@
 
     }
 
-
-
 //////////////////////////////////////////////////////////////////// Personnage controllé par le joueur
     
     var perso = {
@@ -255,7 +252,7 @@
 
         //* Constantes
         poid: param.perso.poid,
-        impulsion: param.perso.impulsion / ratioEcran,
+        impulsion: param.perso.impulsion,
         inertie: param.perso.inertie,
         sprite : document.createElement ("canvas"),
 
@@ -408,6 +405,15 @@
             // * Vérification de la position du perso par rapport à la plateforme  
             if (this.x < perso.x + perso.spriteSize && this.x + this.largeur > perso.x){
                 fond = this.y + this.ligneDeFlottaison;
+                // * Vérification d'une collision avec un ralentisseur
+                if (this.ralentisseur && perso.toucherLeFond){
+                    for (var i = 0; i < this.ralentisseur.length; i++){
+
+                        if (this.ralentisseur[i][0]+ this.x < perso.x && this.ralentisseur[i][1] + this.x > perso.x){
+                            //vitesse = param.plateforme.vitesse;                       
+                    }
+                    }
+                }
             } 
         }
 
