@@ -221,8 +221,7 @@
     }
 
     #deconnexion {
-        justify-self: start;
-        color:green;
+        justify-self: flex-start;
     }
 
     .blink {
