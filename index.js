@@ -103,10 +103,9 @@ let plateformeOnProgress = false;
 let scoreTimer;
 let freshTimer;
 
-
 io.on('connection', function (socket) {
 
-    // gestion connection
+    // * gestion connection
     if (socket.handshake.session.login) {
 
         connections[socket.id]={login: socket.handshake.session.login, runnerState : 'connected', score: 0};
@@ -118,7 +117,7 @@ io.on('connection', function (socket) {
         socket.emit('hello', socket.handshake.session.message);
     }
 
-    // lancement du jeu
+    // * lancement du jeu
     socket.on('play', function () {
         if (!partieEnCours){
             for (var runner in connections) {
@@ -137,7 +136,7 @@ io.on('connection', function (socket) {
         }
     }); 
 
-    // maj client 
+    // * maj client 
     function runUpdate (){
         scoreTimer = setInterval(function () {
             score += (parseInt(vitesse)*3);
@@ -158,7 +157,7 @@ io.on('connection', function (socket) {
         },20)
     }
 
-    // génération de plateformes
+    // * génération de plateformes
     socket.on('largeurPlateforme', function (largeur) {
         if (!plateformeOnProgress) {
             plateformeOnProgress = true;
@@ -193,7 +192,7 @@ io.on('connection', function (socket) {
         plateformeOnProgress = false;
     }
 
-    // Gestion de la fin du jeu
+    // * fin du jeu
     function endGame () {
         clearInterval(scoreTimer);
         clearInterval(freshTimer);
@@ -223,7 +222,7 @@ io.on('connection', function (socket) {
         runnerCount ();
     });
 
-    // Le dernier joueur doit "attraper la lumière" pour enregistrer son score
+    // * Le dernier joueur doit "attraper la lumière" pour enregistrer son score
     socket.on('gotIt', function () {
 
         if (connections[socket.id]) connections[socket.id].runnerState = "winner";
@@ -253,7 +252,7 @@ io.on('connection', function (socket) {
         });
     });
 
-    // génération et envois des meilleurs scores
+    // * meilleurs scores
     socket.on('top5', function () {
         MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
 
@@ -277,7 +276,7 @@ io.on('connection', function (socket) {
         });
     });
 
-    // gestion de la déconnection
+    // * déconnection
     socket.on('disconnect', (reason) => {
         console.log(('Événement socket.io [disconnect]socket.id : ' + socket.id +'reason : ' + reason));
             if (connections[socket.id]) {
