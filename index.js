@@ -96,7 +96,7 @@ app.post('/inscription', function(req,res){
 
 let connections = {};
 let partieEnCours = false;
-let vitesse = 6;
+let vitesse = 3;
 let score = 0;
 let plateformeOnProgress = false;
 let scoreTimer;
@@ -104,22 +104,42 @@ let freshTimer;
 
 
 io.on('connection', function (socket) {
-    
-    console.log("saluuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu" + connections);
+
     // gestion connection
     if (socket.handshake.session.login) {
 
         connections[socket.id]={login: socket.handshake.session.login, runnerState : 'connected', score: 0};
         io.emit('runnersListUpdate', { connections: connections });
-        io.emit('partieEnCours', partieEnCours);
+        socket.emit('instructions', partieEnCours);
     }   
     else {
         socket.emit('hello', socket.handshake.session.message);
     }
 
+    // lancement du jeu
+    socket.on('play', function () {
+        if (!partieEnCours){
+            for (var runner in connections) {
+                connections[runner].runnerState = 'running';
+            }
+            setTimeout(UsineDePlateforme, 6000);
+            partieEnCours = true;
+            io.emit('runnersListUpdate', { connections: connections});
+            score = 0;
+            runUpdate();
+            freshTheClient();
+            io.emit('play');
+        }
+        else {
+            socket.emit('pleaseWait');
+        }
+    }); 
+
+    // maj client 
     function runUpdate (){
         scoreTimer = setInterval(function () {
             score += (parseInt(vitesse)*3);
+            
             for (var runner in connections){
                 if (connections[runner].runnerState === 'running'){
                     connections[runner].score = score; 
@@ -136,11 +156,12 @@ io.on('connection', function (socket) {
         },20)
     }
 
-    // génération de plateformes 
+    // génération de plateformes
     socket.on('largeurPlateforme', function (largeur) {
         if (!plateformeOnProgress) {
             plateformeOnProgress = true;
             let eloignement = 100;
+            // calcule du temps après lequel sera envoyée la prochaine plateforme en fonction de la largeur de la précédente
             let tempo = ((largeur + eloignement) / parseInt(vitesse)) * 20;
             if (partieEnCours){
                 setTimeout(UsineDePlateforme, tempo);
@@ -167,61 +188,14 @@ io.on('connection', function (socket) {
             newNbBriqueCentral: newNbBriqueCentral,
             vitesse : parseInt(vitesse),
         });
-        console.log ('envoyé');
         plateformeOnProgress = false;
     }
 
-    // lancement du jeu
-    socket.on('play', function () {
-        if (!partieEnCours){
-            for (var runner in connections) {
-                connections[runner].runnerState = 'running';
-            }
-            setTimeout(UsineDePlateforme, 6000);
-            partieEnCours = true;
-            io.emit('runnersListUpdate', { connections: connections});
-            score = 0;
-            runUpdate();
-            freshTheClient();
-            io.emit('play');
-        }
-        else {
-            console.log(connections);
-            socket.emit('pleaseWait');
-        }
-    }); 
-
-    // génération et envois des meilleurs scores
-    socket.on('top5', function () {
-        MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
-
-            if (err) console.log ('conection erroooor : ' + err);
-            const collection = client.db('bedrunnermulti').collection('users');
-
-            collection.find({ Perf: { $gt: 0 } }, { "login": 1, "Perf": 1, "pass": 0 })
-            //.project({ "login": 1, "Perf": 1, "pass": 0 })
-            .toArray(function(err, users) {
-
-                let top = [];
-                for ( user in users){
-                    top.push({login : (users[user].login), perf: (users[user].Perf)})
-                }
-
-                top = top.sort((a, b) => (a.perf > b.perf) ? -1 : 1);
-                top = top.slice(0,5);
-
-                socket.emit('top5', top);
-            });
-        });
-    });
-
     // Gestion de la fin du jeu
-
     function endGame () {
         clearInterval(scoreTimer);
         clearInterval(freshTimer);
         vitesse = 3;
-        console.log('end');
         setTimeout(function(){
             partieEnCours = false;
         },3000)
@@ -247,13 +221,11 @@ io.on('connection', function (socket) {
         runnerCount ();
     });
 
-    // Le dernier joueur doit "attraper la lumière" pour pouvoir enregistrer son score
+    // Le dernier joueur doit "attraper la lumière" pour enregistrer son score
     socket.on('gotIt', function () {
-        if (connections[socket.id]) {
 
-        connections[socket.id].runnerState = "winner";
+        if (connections[socket.id]) connections[socket.id].runnerState = "winner";
         endGame();
-        }
 
         MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
             if (err) console.log ('connect' + err);
@@ -275,6 +247,30 @@ io.on('connection', function (socket) {
                     }
                 }
                 client.close();
+            });
+        });
+    });
+
+    // génération et envois des meilleurs scores
+    socket.on('top5', function () {
+        MongoClient.connect(uri,{ useNewUrlParser: true },function(err, client) {
+
+            if (err) console.log ('conection erroooor : ' + err);
+            const collection = client.db('bedrunnermulti').collection('users');
+
+            collection.find({ Perf: { $gt: 0 } }, { "login": 1, "Perf": 1, "pass": 0 })
+            //.project({ "login": 1, "Perf": 1, "pass": 0 })
+            .toArray(function(err, users) {
+
+                let top = [];
+                for ( user in users){
+                    top.push({login : (users[user].login), perf: (users[user].Perf)})
+                }
+
+                top = top.sort((a, b) => (a.perf > b.perf) ? -1 : 1);
+                top = top.slice(0,5);
+
+                socket.emit('top5', top);
             });
         });
     });
