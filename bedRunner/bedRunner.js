@@ -170,6 +170,8 @@
         // Panneau des scores
         socket.on('runnersListUpdate', function (data) {
             
+            connectedRunners = data.connections;
+
             document.getElementById('runnersList').innerHTML = "";
             for (var connection in data.connections) {
                 var scoreRun = data.connections[connection].score;
