@@ -141,12 +141,13 @@
         socket = io.connect();
         //socket = io.connect('http://localhost:8080');
 
+        // Interface d'accueil
         socket.on ('hello', function (message){
             if (message) alert (message);
             affiche ("connection");
         });
 
-        socket.on ('partieEnCours', function (partieEnCours){
+        socket.on ('instructions', function (partieEnCours){
             if (partieEnCours) {
                 affiche ('partieEnCours');
                 masque ('enterToGo');
@@ -157,10 +158,15 @@
             }
         });
 
+        socket.on ('welcome', function (){
+            affiche ('howToPlay');
+        });
+
         socket.on ('pleaseWait', function (){
             alert ('Please wait, there are runners in run');
         });
 
+        // Panneau des scores
         socket.on('runnersListUpdate', function (data) {
 
             connectedRunners = data.connections;
@@ -186,16 +192,9 @@
             }
         });
         
-        // socket.on('scoreUpdate', function (data) {
-        //     document.getElementById("score_" + data[0]).innerHTML = data[1];
-        // });
-
-        socket.on('scoreUpdate', function (score) {
-            for (var runner in connectedRunners){
-                if (connectedRunners[runner].runnerState === 'running'){
-                    document.getElementById("score_" + runner).innerHTML = score;
-                };
-            }
+        // Evenement de jeu
+        socket.on('play', function () { 
+            play();
         });
 
         socket.on('fresh', function () {
@@ -205,9 +204,12 @@
             }
         });
 
-
-        socket.on('play', function () { 
-            play();
+        socket.on('scoreUpdate', function (score) {
+            for (var runner in connectedRunners){
+                if (connectedRunners[runner].runnerState === 'running'){
+                    document.getElementById("score_" + runner).innerHTML = score;
+                };
+            }
         });
 
         socket.on('creaNewPlateforme', function (data) {
@@ -223,6 +225,7 @@
             lastRunner = true;
         });
 
+        // Records
         socket.on('top5', function (top) {
             $('top5Liste').innerHTML = "";
             for (i=0; top[i]; i++){
