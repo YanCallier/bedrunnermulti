@@ -254,7 +254,7 @@
 
         //* Constantes
         poid: param.perso.poid,
-        impulsion: param.perso.impulsion / ratioEcran,
+        impulsion: param.perso.impulsion,
         inertie: param.perso.inertie,
         sprite : document.createElement ("canvas"),
 
@@ -352,7 +352,7 @@
         this.x = x;
         this.y = y;
         this.hauteur = param.plateforme.hauteur; 
-        this.ligneDeFlottaison = (param.plateforme.sources[plateformeSelected].ligneDeFlottaison / ratioEcran); // * Définition de l'endroit où le perso s'arrêtte quand il tombe sur la plateforme
+        this.ligneDeFlottaison = (param.plateforme.sources[plateformeSelected].ligneDeFlottaison); // * Définition de l'endroit où le perso s'arrêtte quand il tombe sur la plateforme
 
         // * Chaque plateforme à une image de fin, une de début et un nombre aléatoir de briques centrales 
         this.imgDebut = preLoadImg1[plateformeSelected];
