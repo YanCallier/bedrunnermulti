@@ -220,8 +220,8 @@
        cursor: pointer;
     }
 
-    #deconnexion {
-        justify-self: self-start;
+    .deconnexion {
+        justify-self: flex-start;
     }
 
     .blink {
