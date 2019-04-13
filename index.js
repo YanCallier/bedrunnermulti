@@ -75,6 +75,7 @@ app.post('/inscription', function(req,res){
                         res.redirect ('/')
                     });
                     req.session.login = user.login;
+                    req.session.newAccount= true;
                 }
                 else {
                     req.session.message = "Ce login existe déjà, il faut en choisir un autre";
@@ -111,6 +112,7 @@ io.on('connection', function (socket) {
         connections[socket.id]={login: socket.handshake.session.login, runnerState : 'connected', score: 0};
         io.emit('runnersListUpdate', { connections: connections });
         socket.emit('instructions', partieEnCours);
+        if (socket.handshake.session.newAccount) socket.emit('welcome');
     }   
     else {
         socket.emit('hello', socket.handshake.session.message);
