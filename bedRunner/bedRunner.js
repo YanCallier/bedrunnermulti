@@ -202,7 +202,6 @@
         });
 
         socket.on('scoreUpdate', function (score) {
-            console.log("salut" + connectedRunners);
             for (var runner in connectedRunners){
                 if (connectedRunners[runner].runnerState === 'running'){
                     document.getElementById("score_" + runner).innerHTML = score;
@@ -334,6 +333,7 @@
 
             //* Recalcule du deplacement si collision avec une plateforme
             if (this.toucherLeFond){
+                console.log (this.tailleDuPerso);
                 this.y = fond - this.tailleDuPerso;
                 this.mouvement = this.vecteurUp;
             }
