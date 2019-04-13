@@ -270,6 +270,7 @@
 
             //* Canvas de défilement des sprites
             this.spriteCtx = this.sprite.getContext("2d");
+            this.tailleDuPerso = this.sprite.height;
         },
         
         anim: function () {
