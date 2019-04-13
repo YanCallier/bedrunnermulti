@@ -220,6 +220,10 @@
        cursor: pointer;
     }
 
+    #deconnexion {
+        justify-self: start;
+    }
+
     .blink {
         animation: colorblink 2s infinite;
     }
