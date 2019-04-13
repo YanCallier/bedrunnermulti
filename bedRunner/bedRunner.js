@@ -2,23 +2,25 @@
 
 (function () {
     "use strict"
-    //*** Variables Globales
+
+//////////////////////////////////////////////////////////////////// Variables Globales
+
     var socket;
     var can;
     var ctx;
     var fond;
-    var ratioEcran = 1;
-    //var score = 45;
+
     var rafresh = 0;
     var stopJeu = true;
     var plateformes = [];
-    var vitesse = param.plateforme.vitesse;  // pour l'instant client
+    var vitesse = param.plateforme.vitesse;
     var lastRunner = false;
     var connectedRunners;
     var runnerState = 'connected';
     var readyToPlay = false;
 
-    //*** Preload de toutes les images appelées dans le canvas avant le lancement du jeu - client
+//////////////////////////////////////////////////////////////////// Preload des ressources
+
     var imgLoaded = 0;
     var imgCollection= [];
 
@@ -59,7 +61,7 @@
     flashMonster.src = "img/" + param.illustrationflashMonster;
     imgCollection.push(flashMonster);
 
-    // * Chaque image appel la fonction "checkLoad" une fois chargée
+    // * Vérification
     for(i=0;i<imgCollection.length;i++){
         imgCollection[i].onload = function () {
             imgLoaded ++;
@@ -67,7 +69,6 @@
         };
     }
 
-    // * Vérifie que toutes les images soient chargées avant de pouvoir lancer le jeu -- client
     function checkLoad (){
         if (imgLoaded === imgCollection.length){
             $("chargement").style.display = "none";
@@ -77,30 +78,26 @@
         }
     }
 
-    window.addEventListener("load", loader); // client conditionné par les donné du server
+//////////////////////////////////////////////////////////////////// Preload des ressources
+    
+    window.addEventListener("load", loader);
     function loader (){
-
         
-        //* Canvas principal en plein écran
         can = $("scene");
         ctx = can.getContext("2d");
         
-        addListeners ();
+        addListeners();
         addSockets();
         
-        //* Definition de caractéristiques d'objet
+        // * Definition de caractéristiques d'objet
         perso.creaSprite();
         light.creaCanLight(); 
  
-        //* Raffraichissements
-        //setInterval(fresh, 20);
-        //fresh();
-
     };
 
-    function addListeners () { // client
+    function addListeners () {
 
-        //* Le jeu se joue uniquement avec la barre d'espace (saut) et le bouton Enter (fonctions utilitaires différentes selon l'état du jeu)
+        // * Le jeu se joue uniquement avec la barre d'espace (saut) et le bouton Enter (fonctions utilitaires différentes selon l'état du jeu)
 
         document.addEventListener("keypress", function (eventInfos){
             if (eventInfos.keyCode === 32  || eventInfos.keyCode === 0) perso.jump();
@@ -137,11 +134,10 @@
 
     function addSockets (){
 
-        //* Connexion Server
         socket = io.connect();
         //socket = io.connect('http://localhost:8080');
 
-        // Interface d'accueil
+        // * Interface d'accueil
         socket.on ('hello', function (message){
             if (message) alert (message);
             affiche ("connection");
@@ -167,7 +163,7 @@
             alert ('Please wait, there are runners in run');
         });
 
-        // Panneau des scores
+        // * Panneau des scores
         socket.on('runnersListUpdate', function (data) {
             
             connectedRunners = data.connections;
@@ -193,7 +189,7 @@
             }
         });
         
-        // Evenement de jeu
+        // * Evenements de jeu
         socket.on('play', function () { 
             play();
         });
@@ -227,7 +223,7 @@
             lastRunner = true;
         });
 
-        // Records
+        // * Records
         socket.on('top5', function (top) {
             $('top5Liste').innerHTML = "";
             for (i=0; top[i]; i++){
@@ -239,7 +235,9 @@
     }
 
 
-// *** Objet controllé par le joueur -- client mais l'affichage doit être géré par le server
+
+//////////////////////////////////////////////////////////////////// Personnage controllé par le joueur
+    
     var perso = {
 
         //* Propriétés recalculées en cours de jeu
@@ -275,12 +273,6 @@
 
             //* Canvas de défilement des sprites
             this.spriteCtx = this.sprite.getContext("2d");
-
-            //* Redimensionnements mobile
-            if (ratioEcran > 1) this.ratioPerso = ratioEcran/2; 
-            this.tailleDuPerso = this.sprite.height / this.ratioPerso;
-            this.impulsion = param.perso.impulsion / this.ratioPerso;
-            this.inertie = this.inertie / this.ratioPerso;
         },
         
         anim: function () {
@@ -293,7 +285,6 @@
             this.spriteCtx.drawImage(imagePersoCourse, this.spriteSize*this.spriteCount, 0, this.spriteSize, this.spriteSize, 0, 0, this.spriteSize, this.spriteSize);
         },
 
-        test:0,
         jump: function() {
             if (this.toucherLeFond) {
                 this.spriteCount = param.perso.nbImageCourse; // * Place le sprite sur la dernière image de course *
@@ -307,9 +298,7 @@
             if (!this.stopeur){
                 this.vecteurUp = this.impulsion-this.vecteurDown;
             }
-            if (this.vecteurUp < 20) this.stopJump(); 
-            // this.test +=1;
-            // if (this.test > 1) this.stopJump();            
+            if (this.vecteurUp < 20) this.stopJump();            
         },
         
         stopJump: function() {
@@ -357,7 +346,8 @@
         }
     }
 
-//*** Constructeur des principaux objets du jeux : les plateformes -- création et caractéristiques server, mouvement et affichage client
+//////////////////////////////////////////////////////////////////// Constructeur de plateformes
+
     function Pateforme (plateformeSelected,x,y,nbBriqueCentral){
         this.x = x;
         this.y = y;
@@ -389,19 +379,8 @@
         for (var i=0;i<nbBriqueCentral;i++){
             //* Choix d'une brique aléatoire
             var centreSelected = lanceLeD(0,param.plateforme.sources[plateformeSelected].centre.length);
-            var centreImage = this.imgCentre[centreSelected];
-            
+            var centreImage = this.imgCentre[centreSelected];         
             var XPos = (i*this.imgCentre[centreSelected].width) + this.imgDebut.width; // * Position
-
-                // //* On vérifie si la brique est un ralentisseur
-                // if (centreImage.src.substring(centreImage.src.length-16) === "ralentisseur.png"){
-                //     if (this.ralentisseur) {
-                //         this.ralentisseur[this.ralentisseur.length] = [XPos, XPos + centreImage.width];
-                //     }
-                //     else {
-                //         this.ralentisseur = [[XPos, XPos + centreImage.width]];   
-                //     }
-                // }
             this.plateformeCtx.drawImage(centreImage,XPos,0,centreImage.width,centreImage.height);
         }
 
@@ -410,13 +389,11 @@
 
         //* ajout de la plateforme au tableau de plateformes
         plateformes.push(this);
-        
 
-        // * Raffraichissement de la plateforme
-        
+        // * Raffraichissement de la plateforme 
         this.maj = function(){
             this.destroy();
-            this.glisse(); // Position
+            this.glisse();
             this.isFond(); // Définition de la plateforme comme objet de collision en fonction de sa position
             ctx.drawImage(this.image,this.x,this.y);
         }
@@ -430,15 +407,6 @@
             // * Vérification de la position du perso par rapport à la plateforme  
             if (this.x < perso.x + perso.spriteSize && this.x + this.largeur > perso.x){
                 fond = this.y + this.ligneDeFlottaison;
-                // * Vérification d'une collision avec un ralentisseur
-                if (this.ralentisseur && perso.toucherLeFond){
-                    for (var i = 0; i < this.ralentisseur.length; i++){
-
-                        if (this.ralentisseur[i][0]+ this.x < perso.x && this.ralentisseur[i][1] + this.x > perso.x){
-                            //vitesse = param.plateforme.vitesse;                       
-                    }
-                    }
-                }
             } 
         }
 
@@ -447,7 +415,8 @@
         }
     }
 
-// *** objet générateur de particules lumineuses représentant le but à atteindre  -- création et caractéristiques server, mouvement et affichage client
+//////////////////////////////////////////////////////////////////// Générateur de particules
+
     var light = {
         centerX: 1500,
         centerY: 200, 
@@ -474,8 +443,8 @@
 
         //* Raffraichissment des particules
         maj: function(){
-            this.anim();//* animation
-            this.glisse(); //* position
+            this.anim();
+            this.glisse();
             //* dessin des particules lumineuses et halo
             if (ralentire(2)) ctx.drawImage(haloImage, this.centerX-100,this.centerY-100);
             ctx.drawImage(this.particules[0], 0,0);
@@ -529,8 +498,6 @@
 
                 //* Dessin de l'écran de victoire et affichage des textes
                 var reSizer = window.innerHeight*1.5;
-                //ctx.shadowBlur = reSizer;
-                //ctx.shadowColor = "white";
                 ctx.drawImage(flashMonster, ((window.innerWidth/2) - (reSizer/2)), ((window.innerHeight/2) - (reSizer/2)), reSizer, reSizer);
                 affiche ("winnerText");
                 endGame ();
@@ -539,18 +506,31 @@
 
     }
 
+//////////////////////////////////////////////////////////////////// Fonctions de mise à jours générales du jeu
 
-////////////// *** Fonctions de mise à jours générales du jeu ***
+    // * Lancement du jeu
+    function play (){
+        masque ("accueil", "game0ver", "winnerText", "looserText", "credit", "instruction", "redLink");
+        affiche ("premierPlan");
 
-    // function fresh (){
-    //     if (!stopJeu){
-    //         //rafresh += 1; // * nombre de rafraichissement (sert la fonction de ralentissement)
-    //         //console.log ('fresh from client : ' + rafresh)
-    //         //majCan();
-    //        // majScore();
-    //     }
-    // }
+        // *  Fabrication manuelle de la prmière plateforme 
+        plateformes = [];
+        var p1 = new Pateforme (1,100,can.height - (param.plateforme.hauteur / 2), 20);
 
+        // *  Paramètres début de jeu
+        perso.y = 0;
+        perso.vecteurUp = 0,
+        perso.vecteurDown = 0,
+        perso.mouvement =  0,
+        lastRunner = false;
+        light.catched = false;
+        light.centerX = 1500;
+        readyToPlay = false;
+        stopJeu = false;
+        runnerState = 'running';
+    }
+
+    // * Animations
     function majCan() {
             ctx.clearRect(0, 0, can.width, can.height);
             perso.maj();
@@ -562,33 +542,8 @@
             gameOver ();
     }
 
-
-    function play (){
-        masque ("accueil", "game0ver", "winnerText", "looserText", "credit", "instruction", "redLink");
-        affiche ("premierPlan");
-
-        // *  Fabrication manuelle de la prmière plateforme 
-        plateformes = [];
-        var p1 = new Pateforme (1,100,can.height - (param.plateforme.hauteur / 2), 20);
-
-        perso.y = 0;
-        perso.vecteurUp = 0,
-        perso.vecteurDown = 0,
-        perso.mouvement =  0,
-        lastRunner = false;
-
-        light.catched = false;
-        light.centerX = 1500;
-        ctx.shadowBlur = 'none';
-        ctx.shadowColor = 'black';
-
-        readyToPlay = false;
-        stopJeu = false;
-        runnerState = 'running';
-    }
-
+    // * fin du jeu
     function gameOver (){
-        
         if (perso.y > can.width){
             runnerState = "dead";
             affiche ("game0ver", "looserText");
@@ -599,7 +554,6 @@
 
     function endGame () {
         light.centerX = 1500;
-        //lastRunner = false;
         vitesse = 3;
         stopJeu = true;
         $("redLink").style.display = "flex";
@@ -634,8 +588,7 @@
         affiche("howToPlay");
     }
 
-
-// *** Fonctions de factorisation
+//////////////////////////////////////////////////////////////////// Fonctions de factorisation
 
     function ralentire (speed){  // client
     // * Ralentis l'animation d'un élément (qui s'anime tous les <speed> raffraichissements) 
