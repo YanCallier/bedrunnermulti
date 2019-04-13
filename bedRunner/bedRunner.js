@@ -204,6 +204,7 @@
         });
 
         socket.on('scoreUpdate', function (score) {
+            console.log("salut" + score);
             for (var runner in connectedRunners){
                 if (connectedRunners[runner].runnerState === 'running'){
                     document.getElementById("score_" + runner).innerHTML = score;
