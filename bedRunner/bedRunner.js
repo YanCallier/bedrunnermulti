@@ -78,7 +78,7 @@
         }
     }
 
-//////////////////////////////////////////////////////////////////// Preload des ressources
+//////////////////////////////////////////////////////////////////// Dom loaded -> setting game
     
     window.addEventListener("load", loader);
     function loader (){
@@ -523,7 +523,7 @@
 
         // *  Fabrication manuelle de la prmière plateforme 
         plateformes = [];
-        var p1 = new Pateforme (1,100,can.height - (param.plateforme.hauteur / 2), 20);
+        new Pateforme (1,100,can.height - (param.plateforme.hauteur / 2), 20);
 
         // *  Paramètres début de jeu
         perso.y = 0;
@@ -531,6 +531,7 @@
         perso.vecteurDown = 0,
         perso.mouvement =  0,
         lastRunner = false;
+        vitesse = 3;
         light.catched = false;
         light.centerX = 1500;
         readyToPlay = false;
@@ -562,11 +563,11 @@
 
     function endGame () {
         light.centerX = 1500;
-        vitesse = 3;
         stopJeu = true;
         $("redLink").style.display = "flex";
     }
     
+    // * fonction utilitaires
     function enterFct (){
         
         if (readyToPlay) {
