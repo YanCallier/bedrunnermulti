@@ -91,6 +91,11 @@ app.post('/inscription', function(req,res){
         res.redirect ('/');
         //res.render('connection', {message : "Tous les champs sont obligatoires"});
     }
+
+});
+
+app.get('/logout', function(req,res){
+    sockets.disconnectUser(req.session.login);
 });
 
 //////////////////////////////////////////////////////////////////// Echanges client - serveur
@@ -281,7 +286,8 @@ io.on('connection', function (socket) {
         console.log(('Événement socket.io [disconnect]socket.id : ' + socket.id +'reason : ' + reason));
             if (connections[socket.id]) {
                 connections[socket.id].runnerState = 'dead';
-                socket.handshake.session.login = false;
+                //socket.handshake.session.login = false;
+                
                 runnerCount ();
                 delete connections[socket.id];
                 io.emit('runnersListUpdate', { connections: connections});
