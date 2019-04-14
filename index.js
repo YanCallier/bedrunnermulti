@@ -6,6 +6,7 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const MongoClient = require('mongodb').MongoClient;
+var ON_DEATH = require('death'); //this is intentionally ugly
 
 //const uri = 'mongodb://localhost:27017/';
 const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
@@ -298,6 +299,11 @@ io.on('connection', function (socket) {
             }
         }
     );
+
+    ON_DEATH(function(signal, err) {
+        console.log('deathhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh')
+        // io.emit('killAll', {terminate: true});
+      })
 });
 
 //////////////////////////////////////////////////////////////////// 404 & port listening
