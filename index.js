@@ -96,6 +96,7 @@ app.post('/inscription', function(req,res){
 
 app.get('/logout', function(req,res){
     sockets.disconnectUser(req.session.login);
+    res.redirect ('/');
 });
 
 //////////////////////////////////////////////////////////////////// Echanges client - serveur
