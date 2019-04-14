@@ -289,7 +289,7 @@ io.on('connection', function (socket) {
             if (connections[socket.id]) {
                 connections[socket.id].runnerState = 'dead';
                 //socket.handshake.session.login = false;
-                console.log ('tesssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssst : ' + sockets.socket(users));
+                console.log ('tesssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssst : ' + sockets);
                 //sockets.socket(users[user_id]).disconnect();
                 
                 runnerCount ();
