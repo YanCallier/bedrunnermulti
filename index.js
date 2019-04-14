@@ -96,7 +96,7 @@ app.post('/inscription', function(req,res){
 
 app.get('/logout', function(req,res){
     //sockets.disconnectUser(req.session.login);
-    console.log ('logouuuuuuuuuuuuuuuuuuuuuuuuuuut : ' + req.session);
+    console.log ('logouuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuut : ' + req.session.login);
     res.redirect ('/');
 });
 
