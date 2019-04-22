@@ -224,6 +224,7 @@
     .red-link a {
         color: #8A2E2F;
         text-decoration: none;
+        margin-left: 20px;
         margin-right: auto;
      }
 
