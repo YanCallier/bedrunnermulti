@@ -20,12 +20,11 @@ const session = require('express-session')({
     saveUninitialized: true
 });
 
-const sharedsession = require("express-socket.io-session");
 app.use(session);
 io.use(sharedsession(session, {
     autoSave:true
 }));
-
+req.session.cookie.expires = false;
 app.use("/", express.static(__dirname + '/bedRunner'));
 
 //////////////////////////////////////////////////////////////////// Routes
@@ -96,10 +95,7 @@ app.post('/inscription', function(req,res){
 });
 
 app.get('/logout', function(req,res){
-    //sockets.disconnectUser(req.session.login);
-    console.log ('logouuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuut : ' + req.session.login);
     req.session.destroy(function(err) {
-        console.log ("destroyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyed")
         res.redirect ('/');
       })
 });
@@ -291,17 +287,7 @@ io.on('connection', function (socket) {
     socket.on('disconnect', (reason) => {
         console.log(('Événement socket.io [disconnect]socket.id : ' + socket.id +'reason : ' + reason));
             if (connections[socket.id]) {
-                connections[socket.id].runnerState = 'dead';
-                //socket.handshake.session.login = false;
-                //sockets.socket(users[user_id]).disconnect();
-                //connections[socket.id].disconnect();
-                //callApi()
-                //const req = new XMLHttpRequest();
-                //req.open('GET', '/logout', false); 
-                //req.send(null);
-
-                console.log ('tesssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssst : ' + connections);
-                
+                connections[socket.id].runnerState = 'dead';             
                 runnerCount ();
                 delete connections[socket.id];
                 io.emit('runnersListUpdate', { connections: connections});
@@ -310,13 +296,6 @@ io.on('connection', function (socket) {
     );
 
 });
-        callApi = async () => {
-            console.log ('caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaal');
-            const response = await fetch('/logout');
-            const body = await response.json();
-            if (response.status !== 200) throw Error(body.message);
-            return body;
-          };
 
 //////////////////////////////////////////////////////////////////// 404 & port listening
 
