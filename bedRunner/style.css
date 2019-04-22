@@ -212,10 +212,11 @@
         position: absolute;
         top: 95%;
         display: flex;
-        justify-content: flex-end;
+        
         z-index: 50;
     }
     .red-link div {
+        justify-self: flex-end;
        margin-right:30px;
        cursor: pointer;
     }
