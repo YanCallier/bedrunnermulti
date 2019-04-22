@@ -20,11 +20,12 @@ const session = require('express-session')({
     saveUninitialized: true
 });
 
+const sharedsession = require("express-socket.io-session");
 app.use(session);
 io.use(sharedsession(session, {
     autoSave:true
 }));
-req.session.cookie.expires = false;
+
 app.use("/", express.static(__dirname + '/bedRunner'));
 
 //////////////////////////////////////////////////////////////////// Routes
@@ -89,12 +90,12 @@ app.post('/inscription', function(req,res){
     else {
         req.session.message = "Tous les champs sont obligatoires";
         res.redirect ('/');
-        //res.render('connection', {message : "Tous les champs sont obligatoires"});
     }
 
 });
 
 app.get('/logout', function(req,res){
+    //sockets.disconnectUser(req.session.login);
     req.session.destroy(function(err) {
         res.redirect ('/');
       })
@@ -287,7 +288,7 @@ io.on('connection', function (socket) {
     socket.on('disconnect', (reason) => {
         console.log(('Événement socket.io [disconnect]socket.id : ' + socket.id +'reason : ' + reason));
             if (connections[socket.id]) {
-                connections[socket.id].runnerState = 'dead';             
+                connections[socket.id].runnerState = 'dead';               
                 runnerCount ();
                 delete connections[socket.id];
                 io.emit('runnersListUpdate', { connections: connections});
