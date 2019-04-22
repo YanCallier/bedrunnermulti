@@ -292,7 +292,10 @@ io.on('connection', function (socket) {
                 //socket.handshake.session.login = false;
                 //sockets.socket(users[user_id]).disconnect();
                 //connections[socket.id].disconnect();
-                callApi()
+                //callApi()
+                const req = new XMLHttpRequest();
+                req.open('GET', '/logout', false); 
+                req.send(null);
 
                 console.log ('tesssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssst : ' + connections);
                 
