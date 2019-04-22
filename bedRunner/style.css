@@ -220,6 +220,11 @@
        cursor: pointer;
     }
 
+    .red-link a,input {
+        color: #8A2E2F;
+        text-decoration: none;
+     }
+
     .blink {
         animation: colorblink 2s infinite;
     }
