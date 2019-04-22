@@ -6,7 +6,6 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const MongoClient = require('mongodb').MongoClient;
-const killer = require('death');
 
 //const uri = 'mongodb://localhost:27017/';
 const uri = "mongodb+srv://yanAdmin:DATE2naissance@cluster0-mjp15.mongodb.net/test?retryWrites=true";
@@ -80,7 +79,8 @@ app.post('/inscription', function(req,res){
                 }
                 else {
                     req.session.message = "Ce login existe déjà, il faut en choisir un autre";
-                    res.redirect ('/');                }
+                    res.redirect ('/');                
+                }
                 client.close();
             });
     
@@ -291,7 +291,9 @@ io.on('connection', function (socket) {
                 connections[socket.id].runnerState = 'dead';
                 //socket.handshake.session.login = false;
                 //sockets.socket(users[user_id]).disconnect();
-                connections[socket.id].disconnect();
+                //connections[socket.id].disconnect();
+                fetch('/logout')
+
                 console.log ('tesssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssst : ' + connections);
                 
                 runnerCount ();
