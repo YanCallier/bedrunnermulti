@@ -98,7 +98,10 @@ app.post('/inscription', function(req,res){
 app.get('/logout', function(req,res){
     //sockets.disconnectUser(req.session.login);
     console.log ('logouuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuut : ' + req.session.login);
-    res.redirect ('/');
+    req.session.destroy(function(err) {
+        console.log ("destroyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyed")
+        res.redirect ('/');
+      })
 });
 
 //////////////////////////////////////////////////////////////////// Echanges client - serveur
@@ -293,9 +296,9 @@ io.on('connection', function (socket) {
                 //sockets.socket(users[user_id]).disconnect();
                 //connections[socket.id].disconnect();
                 //callApi()
-                const req = new XMLHttpRequest();
-                req.open('GET', '/logout', false); 
-                req.send(null);
+                //const req = new XMLHttpRequest();
+                //req.open('GET', '/logout', false); 
+                //req.send(null);
 
                 console.log ('tesssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssst : ' + connections);
                 
