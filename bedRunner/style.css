@@ -212,18 +212,19 @@
         position: absolute;
         top: 95%;
         display: flex;
-        
+        justify-content: flex-end;
         z-index: 50;
     }
+
     .red-link div {
-        justify-self: flex-end;
        margin-right:30px;
        cursor: pointer;
     }
 
-    .red-link a,input {
+    .red-link a {
         color: #8A2E2F;
         text-decoration: none;
+        margin-right: auto;
      }
 
     .blink {
