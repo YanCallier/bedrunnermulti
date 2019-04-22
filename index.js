@@ -303,14 +303,14 @@ io.on('connection', function (socket) {
         }
     );
 
-    callApi = async () => {
-        console.log ('caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaal');
-        const response = await fetch('/logout');
-        const body = await response.json();
-        if (response.status !== 200) throw Error(body.message);
-        return body;
-      };
 });
+        callApi = async () => {
+            console.log ('caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaal');
+            const response = await fetch('/logout');
+            const body = await response.json();
+            if (response.status !== 200) throw Error(body.message);
+            return body;
+          };
 
 //////////////////////////////////////////////////////////////////// 404 & port listening
 
